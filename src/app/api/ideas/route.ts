@@ -1,0 +1,76 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { query } from '../../../lib/db';
+import { getSessionFromHeader } from '../../../lib/auth';
+
+// Simple JSON body parser + validation using NextRequest.json()
+
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const page = Number(url.searchParams.get('page') || '1');
+  let perPage = Number(url.searchParams.get('perPage') || '10');
+  if (!Number.isFinite(perPage) || perPage <= 0) perPage = 10;
+  perPage = Math.min(50, Math.floor(perPage));
+  let offset = (page - 1) * perPage;
+  if (!Number.isFinite(offset) || offset < 0) offset = 0;
+
+  // Some MySQL setups do not accept prepared params for LIMIT/OFFSET. Inline validated integers.
+  const rows = await query(
+    `SELECT i.id, i.title, i.description, i.created_at, COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count
+     FROM ideas i
+     LEFT JOIN votes v ON v.idea_id = i.id
+     GROUP BY i.id
+     ORDER BY score DESC, vote_count DESC
+     LIMIT ${perPage} OFFSET ${offset}`
+  );
+
+  return new Response(JSON.stringify({ data: rows }), { status: 200 });
+}
+
+// In-memory rate limit map: ip -> [timestamps]
+const RATE_LIMIT_MAP = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 10;
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const arr = RATE_LIMIT_MAP.get(ip) || [];
+  const filtered = arr.filter((t) => now - t < RATE_LIMIT_WINDOW);
+  filtered.push(now);
+  RATE_LIMIT_MAP.set(ip, filtered);
+  return filtered.length > RATE_LIMIT_MAX;
+}
+
+function getIP(req: NextRequest) {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  const cf = req.headers.get('cf-connecting-ip');
+  if (cf) return cf;
+  return req.headers.get('host') || 'unknown';
+}
+
+export async function POST(req: NextRequest) {
+  const ip = getIP(req);
+  if (isRateLimited(ip)) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+
+  try {
+    const session = await getSessionFromHeader(req);
+    if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+
+    const body = await req.json().catch(() => ({}));
+    const title = (body.title || '').toString().trim();
+    const description = (body.description || '').toString().trim();
+
+    if (!title || title.length < 5) return NextResponse.json({ error: 'Title too short' }, { status: 400 });
+    if (!description || description.length < 10) return NextResponse.json({ error: 'Description too short' }, { status: 400 });
+
+    const res = await query(
+      'INSERT INTO ideas (user_id, title, description) VALUES (?, ?, ?)',
+      [session.user.id || null, title, description]
+    );
+
+    return NextResponse.json({ ok: true, id: (res as any).insertId }, { status: 201 });
+  } catch (err: any) {
+    console.error('Error in POST /api/ideas:', err && err.stack ? err.stack : err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
