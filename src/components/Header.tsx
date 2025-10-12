@@ -28,7 +28,7 @@ export default function Header() {
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <div className="relative">
                 <img 
-                  src="/logo.jpg" 
+                  src="/logo.png" 
                   alt="Gamesta" 
                   className="h-10 w-10 object-contain rounded-lg shadow-sm border border-border" 
                 />

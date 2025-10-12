@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   title: "Gamesta — Ideas Platform",
   description: "Collect, vote and showcase college fest ideas. Join the community of innovators.",
   icons: {
-    icon: '/logo.jpg',
-    shortcut: '/logo.jpg',
+    icon: '/logo.png',
+    shortcut: '/logo.png',
   },
 };
 
