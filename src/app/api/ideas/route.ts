@@ -59,9 +59,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const title = (body.title || '').toString().trim();
     const description = (body.description || '').toString().trim();
+  const followedInstagram = !!body.followedInstagram;
 
     if (!title || title.length < 5) return NextResponse.json({ error: 'Title too short' }, { status: 400 });
     if (!description || description.length < 10) return NextResponse.json({ error: 'Description too short' }, { status: 400 });
+  if (!followedInstagram) return NextResponse.json({ error: 'You must follow our Instagram account before submitting an idea' }, { status: 400 });
 
     const res = await query(
       'INSERT INTO ideas (user_id, title, description) VALUES (?, ?, ?)',

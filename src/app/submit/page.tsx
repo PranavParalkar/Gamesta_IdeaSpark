@@ -10,6 +10,7 @@ import { Textarea } from '../../components/ui/Input';
 export default function SubmitPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [followedInstagram, setFollowedInstagram] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -18,10 +19,11 @@ export default function SubmitPage() {
     e.preventDefault();
     setError(null);
     
-    if (!title.trim()) return setError('Title is required');
+  if (!title.trim()) return setError('Title is required');
     if (!description.trim()) return setError('Description is required');
     if (title.length < 5) return setError('Title must be at least 5 characters');
     if (description.length < 20) return setError('Description must be at least 20 characters');
+  if (!followedInstagram) return setError('Please follow our Instagram account before submitting your idea');
     
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
     if (!token) return setError('Please sign in first');
@@ -30,7 +32,7 @@ export default function SubmitPage() {
     try {
       const res = await fetch('/api/ideas', { 
         method: 'POST', 
-        body: JSON.stringify({ title, description }), 
+        body: JSON.stringify({ title, description, followedInstagram }), 
         headers: { 
           'Content-Type': 'application/json', 
           ...(token ? { Authorization: `Bearer ${token}` } : {}) 
@@ -105,6 +107,13 @@ export default function SubmitPage() {
                   <div className="text-xs text-muted-foreground">
                     {description.length}/500 characters
                   </div>
+                </div>
+
+                <div className="flex items-center space-x-3 pt-4">
+                  <input id="follow_instagram" type="checkbox" checked={followedInstagram} onChange={(e) => setFollowedInstagram(e.target.checked)} />
+                  <label htmlFor="follow_instagram" className="text-sm">
+                    I confirm I follow <a target="_blank" rel="noreferrer" href="https://www.instagram.com/gamesta_mitaoe?igsh=NDQwOTJ6Ym1kanpz" className="text-blue-600">gamesta_mitaoe</a> on Instagram
+                  </label>
                 </div>
 
                 {error && (
