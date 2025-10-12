@@ -60,7 +60,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-flex items-center space-x-3 mb-6">
             <div className="relative">
               <img 
-                src="/logo.jpg" 
+                src="/logo.png" 
                 alt="Gamesta" 
                 className="h-16 w-16 object-contain rounded-xl shadow-lg border-2 border-white/20" 
               />
