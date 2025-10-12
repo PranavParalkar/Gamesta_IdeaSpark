@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { query } from '../../../../../lib/db';
 import { getSessionFromHeader } from '../../../../../lib/auth';
 
-export async function POST(req: NextRequest, { params }: { params: { id?: string } }) {
+export async function POST(req: NextRequest, { params }: any) {
   try {
     const session = await getSessionFromHeader(req);
     if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
