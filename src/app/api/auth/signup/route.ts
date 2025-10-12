@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '../../../../lib/db';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
-const SALT_ROUNDS = 10;
+import { supabase } from '../../../../lib/supabase';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -16,14 +11,32 @@ export async function POST(req: NextRequest) {
   if (!password || password.length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
 
   try {
-    const existing = await query('SELECT id FROM users WHERE email = ?', [email]);
-    if ((existing as any[]).length > 0) return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name || email.split('@')[0]
+        }
+      }
+    });
 
-    const hash = await bcrypt.hash(password, SALT_ROUNDS);
-    const ins = await query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name || null, email, hash]);
-    const userId = (ins as any).insertId;
-    const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
-    return NextResponse.json({ token, userId });
+    if (error) {
+      if (error.message.includes('already registered')) {
+        return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
+      }
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (!data.session) {
+      return NextResponse.json({ error: 'Signup successful but no session created' }, { status: 500 });
+    }
+
+    return NextResponse.json({ 
+      token: data.session.access_token,
+      userId: data.user?.id,
+      user: data.user
+    });
   } catch (e: any) {
     console.error('Signup error:', e && e.stack ? e.stack : e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
