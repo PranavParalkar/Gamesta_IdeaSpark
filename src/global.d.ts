@@ -1,0 +1,9 @@
+// Type declarations for static asset imports used in this project
+declare module '*.css';
+declare module '*.png';
+declare module '*.jpg';
+declare module '*.jpeg';
+declare module '*.svg';
+declare module '*.webp';
+
+export {};

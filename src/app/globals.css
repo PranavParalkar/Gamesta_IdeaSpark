@@ -25,6 +25,19 @@
   --radius: 0.5rem;
 }
 
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: black;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
+
 [data-theme="dark"] {
   /* Dark Theme */
   --background: #0a0a0a;
