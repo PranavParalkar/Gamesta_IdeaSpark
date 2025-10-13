@@ -31,7 +31,9 @@ html, body {
   margin: 0;
   padding: 0;
   background: black;
-  overflow: hidden;
+  /* Allow vertical scrolling while preventing horizontal overflow */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 canvas {

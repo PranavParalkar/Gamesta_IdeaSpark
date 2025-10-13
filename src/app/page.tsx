@@ -9,7 +9,7 @@ export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen">
       {/* Hyperspeed Background */}
       <div className="absolute inset-0 z-0">
         <Hyperspeed effectOptions={hyperspeedPresets.one} />
@@ -20,7 +20,7 @@ export default function Home() {
         <Header />
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-20 sm:py-32 min-h-[70vh]">
+  <section className="relative py-20 sm:py-32 min-h-[70vh]">
           <div className="mx-auto px-4 relative z-10">
             <div className="text-center text-white space-y-6 animate-fade-in">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
@@ -34,9 +34,11 @@ export default function Home() {
                 <Button size="lg" className="bg-gradient-to-l from-pink-300 to-purple-500 text-primary hover:bg-white/90 text-lg px-8 py-3">
                   Explore Ideas
                 </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-3">
-                  Submit Your Idea
-                </Button>
+                <a href="/submit">
+                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-3">
+                    Submit Your Idea
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
