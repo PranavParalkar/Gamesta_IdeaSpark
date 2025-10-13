@@ -11,30 +11,23 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  // Keep both types for compatibility, but default to dark and remove light option.
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check for saved theme first, then system preference
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      setTheme(systemTheme);
-    }
+    // Force dark theme as the default and single available theme.
+    try {
+      localStorage.setItem('theme', 'dark');
+    } catch (e) {}
+    document.documentElement.setAttribute('data-theme', 'dark');
   }, []);
 
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-  }, [theme, mounted]);
-
+  // No-op toggle to preserve API shape if some components still call it.
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    // intentionally left blank: light theme removed
+    setTheme('dark');
   };
 
   // Always provide the context, even when not mounted

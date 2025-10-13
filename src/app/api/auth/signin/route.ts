@@ -19,7 +19,12 @@ export async function POST(req: NextRequest) {
   try {
     const res = await query('SELECT id, password FROM users WHERE email = ?', [email]);
     if ((res as any[]).length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      // If user not found, create an account (signup-on-first-use)
+      const hash = await bcrypt.hash(password, SALT_ROUNDS);
+      const ins = await query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name || null, email, hash]);
+      const userId = (ins as any).insertId;
+      const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
+      return NextResponse.json({ token, userId });
     }
     // User exists: verify password
     const row = (res as any[])[0];

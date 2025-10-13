@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/Button';
-import { ThemeToggle } from './ui/ThemeToggle';
+// ThemeToggle removed — app is dark-only
 
 function getToken() {
   return typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
@@ -24,7 +24,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-3 z-50 w-full sm:w-11/12 md:w-1/2 mx-auto border-b border-border rounded-full bg-gradient-to-l from-purple-300 to-pink-200 backdrop-blur px-3 sm:px-0">
-      <div className="container mx-auto px-4">
+  <div className="container mx-auto px-4">
         {/* Grid with 3 columns: left=logo, center=nav (centered), right=actions */}
         <div className="grid grid-cols-3 items-center h-14">
           {/* Left: Logo (left aligned) */}
@@ -53,7 +53,7 @@ export default function Header() {
 
           {/* Right: Actions (right aligned) */}
           <div className="flex items-center justify-end space-x-3">
-            <ThemeToggle className="hidden sm:inline-flex" />
+            {/* Theme toggle removed; header uses dark styling */}
 
             {/* Mobile menu button (shown on small screens) */}
             <div className="md:hidden">
@@ -135,6 +135,6 @@ export default function Header() {
           </div>
         </div>
       )}
-    </header>
+  </header>
   );
 }
