@@ -12,8 +12,9 @@ export async function POST(req: NextRequest, { params }: any) {
     const ideaId = Number(params?.id ?? body.ideaId ?? body.id ?? 0);
     const vote = Number(body.vote ?? 0);
 
-    if (!ideaId || ![1, -1].includes(vote)) {
-      return NextResponse.json({ error: 'Invalid payload: idea id and vote (1 or -1) required' }, { status: 400 });
+    // Only upvotes (1) are supported. Downvotes are not allowed.
+    if (!ideaId || vote !== 1) {
+      return NextResponse.json({ error: 'Invalid payload: idea id and vote (1) required' }, { status: 400 });
     }
 
     // Helper to get aggregated stats for the idea
@@ -29,28 +30,28 @@ export async function POST(req: NextRequest, { params }: any) {
       return stats[0] || { score: 0, upvote_count: 0, vote_count: 0 };
     }
 
-    // Enforce one vote per user per idea. Toggle behavior:
-    // - If same vote exists -> remove (unvote)
-    // - If opposite vote exists -> update to new value
-    // - If no vote -> insert
+    // Enforce one vote per user per idea. Toggle behavior for upvote:
+    // - If same upvote exists -> remove (unvote)
+    // - If no vote -> insert upvote
     const existing = (await query('SELECT id, vote FROM votes WHERE idea_id = ? AND voter_user_id = ?', [ideaId, session.user.id])) as any[];
     if (existing.length > 0) {
       const row = existing[0];
       const existingVote = Number(row.vote || 0);
-      if (existingVote === vote) {
-        // Idempotent: same vote already exists, no-op (do not remove). Prevent accidental score decrease.
+      if (existingVote === 1) {
+        // User already upvoted -> remove the vote (toggle off)
+        await query('DELETE FROM votes WHERE id = ?', [row.id]);
         const stats = await getIdeaStats(ideaId);
-        return NextResponse.json({ ok: true, unchanged: true, stats }, { status: 200 });
+        return NextResponse.json({ ok: true, removed: true, stats }, { status: 200 });
       } else {
-        // Update to new vote
-        await query('UPDATE votes SET vote = ? WHERE id = ?', [vote, row.id]);
+        // Defensive: if some other value exists, normalize to upvote
+        await query('UPDATE votes SET vote = 1 WHERE id = ?', [row.id]);
         const stats = await getIdeaStats(ideaId);
         return NextResponse.json({ ok: true, updated: true, stats }, { status: 200 });
       }
     }
 
-    // No existing vote, insert new
-    const res = await query('INSERT INTO votes (idea_id, voter_user_id, vote) VALUES (?, ?, ?)', [ideaId, session.user.id, vote]);
+    // No existing vote, insert new upvote
+    const res = await query('INSERT INTO votes (idea_id, voter_user_id, vote) VALUES (?, ?, ?)', [ideaId, session.user.id, 1]);
     const stats = await getIdeaStats(ideaId);
     return NextResponse.json({ ok: true, inserted: true, id: (res as any).insertId, stats }, { status: 201 });
   } catch (err: any) {

@@ -12,12 +12,12 @@ const fetcher = (url: string) => {
 export default function IdeasPage() {
   const { data: ideasData, mutate } = useSWR('/api/ideas', fetcher);
   
-  async function vote(id: number, v: number) {
+  async function vote(id: number) {
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
     if (!token) return alert('Please sign in to vote');
     await fetch(`/api/ideas/${id}/vote`, { 
       method: 'POST', 
-      body: JSON.stringify({ ideaId: id, vote: v }), 
+      body: JSON.stringify({ ideaId: id, vote: 1 }), 
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } 
     });
     mutate();
@@ -108,7 +108,7 @@ export default function IdeasPage() {
                   <div className="flex items-center space-x-2">
                     <Button 
                       size="sm" 
-                      onClick={() => vote(idea.id, 1)}
+                      onClick={() => vote(idea.id)}
                       className="flex items-center space-x-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,17 +116,7 @@ export default function IdeasPage() {
                       </svg>
                       <span>Upvote</span>
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => vote(idea.id, -1)}
-                      className="flex items-center space-x-1"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                      </svg>
-                      <span>Downvote</span>
-                    </Button>
+                    {/* Downvote removed; only upvotes allowed */}
                   </div>
                   
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
