@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../../components/ui/Button';
 import PrismaticBurst from '../../components/ui/PrismaticBurst';
@@ -17,29 +17,34 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const router = useRouter();
-  const search = useSearchParams();
 
   // If we were redirected from OAuth (callbackUrl set to /login?oauth=1),
   // exchange NextAuth session for the app JWT and redirect home.
   useEffect(() => {
-    const oauth = search.get('oauth');
-    if (oauth === '1') {
-      (async () => {
-        try {
-          const res = await fetch('/api/auth/oauth-token');
-          if (res.ok) {
-            const json = await res.json();
-            sessionStorage.setItem('gamesta_token', json.token);
-            router.push('/');
-          } else {
-            console.error('Failed to exchange oauth token', await res.text());
+    // Use window.location to avoid useSearchParams which causes a pre-render suspense requirement
+    try {
+      const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+      const oauth = params.get('oauth');
+      if (oauth === '1') {
+        (async () => {
+          try {
+            const res = await fetch('/api/auth/oauth-token');
+            if (res.ok) {
+              const json = await res.json();
+              sessionStorage.setItem('gamesta_token', json.token);
+              router.push('/');
+            } else {
+              console.error('Failed to exchange oauth token', await res.text());
+            }
+          } catch (e) {
+            console.error('OAuth exchange error', e);
           }
-        } catch (e) {
-          console.error('OAuth exchange error', e);
-        }
-      })();
+        })();
+      }
+    } catch (e) {
+      console.error('Error parsing URL params', e);
     }
-  }, [search, router]);
+  }, [router]);
 
   async function submit(e: any) {
     e.preventDefault();
