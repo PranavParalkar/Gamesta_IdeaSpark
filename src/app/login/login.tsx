@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../../components/ui/Button';
+import PrismaticBurst from '../../components/ui/PrismaticBurst';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 
@@ -46,12 +47,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-bounce-custom"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-white/10 rounded-full animate-bounce-custom" style={{animationDelay: '0.5s'}}></div>
-        <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-white/10 rounded-full animate-bounce-custom" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-40 right-1/3 w-14 h-14 bg-white/10 rounded-full animate-bounce-custom" style={{animationDelay: '1.5s'}}></div>
+      {/* PrismaticBurst background only */}
+      <div className="absolute inset-0 z-0">
+        <PrismaticBurst
+          intensity={1.8}
+          speed={0.6}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
+          mixBlendMode="screen"
+        />
       </div>
 
       <div className="w-full max-w-md relative z-10">

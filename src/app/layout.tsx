@@ -32,9 +32,12 @@ export default function RootLayout({
       <head>
         {/* Ensure proper mobile viewport scaling */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Make the browser UI/theme black during initial load to avoid white flash */}
+        <meta name="theme-color" content="#000000" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ background: '#000000' }}
       >
         <ThemeProvider>
           {children}

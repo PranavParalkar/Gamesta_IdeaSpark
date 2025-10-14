@@ -31,9 +31,11 @@ export default function Home() {
                 Join the community of innovators. Collect, vote, and showcase college fest ideas that inspire and transform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+                <a href="/ideas">
                 <Button size="lg" className="bg-gradient-to-l from-pink-300 to-purple-500 text-primary hover:bg-white/90 text-lg px-8 py-3">
                   Explore Ideas
                 </Button>
+                </a>
                 <a href="/submit">
                   <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-3">
                     Submit Your Idea
