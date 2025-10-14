@@ -31,6 +31,7 @@ uniform vec2  uOffset;
 uniform sampler2D uGradient;
 uniform float uNoiseAmount;
 uniform int   uRayCount;
+uniform int   uMaxSteps;
 
 float hash21(vec2 p){
     p = floor(p);
@@ -115,7 +116,8 @@ void main(){
       hoverMat = rotY(ang.y) * rotX(ang.x);
     }
 
-    for (int i = 0; i < 44; ++i) {
+  for (int i = 0; i < 64; ++i) {
+    if(i >= uMaxSteps) break;
         vec3 P = marchT * dir;
         P.z -= 2.0;
         float rad = length(P);
@@ -166,7 +168,7 @@ void main(){
                   * spectral;
 
         col += base * rayPattern;
-        marchT += stepLen;
+    marchT += stepLen;
     }
 
     col *= edgeFade(frag, uResolution, uOffset);
@@ -248,7 +250,9 @@ const PrismaticBurst = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // Reduce quality on mobile to improve performance
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
+  const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 2);
     const renderer = new Renderer({ dpr, alpha: false, antialias: false });
     rendererRef.current = renderer;
 
@@ -290,8 +294,9 @@ const PrismaticBurst = ({
         uDistort: { value: 0 },
         uOffset: { value: [0, 0] },
         uGradient: { value: gradientTex },
-        uNoiseAmount: { value: 0.8 },
-        uRayCount: { value: 0 }
+        uNoiseAmount: { value: isMobile ? 0.2 : 0.8 },
+        uRayCount: { value: isMobile ? 0 : 0 },
+        uMaxSteps: { value: isMobile ? 16 : 44 }
       }
     });
 
@@ -340,11 +345,20 @@ const PrismaticBurst = ({
     const onVis = () => {};
     document.addEventListener('visibilitychange', onVis);
 
-    let raf = 0;
+  let raf = 0;
     let last = performance.now();
     let accumTime = 0;
 
+    // Throttle updates on mobile to ~30fps
+    const targetDt = isMobile ? (1000 / 30) : 0;
     const update = (now: number) => {
+      if (isMobile) {
+        const elapsed = now - last;
+        if (elapsed < targetDt) {
+          raf = requestAnimationFrame(update);
+          return;
+        }
+      }
       const dt = Math.max(0, now - last) * 0.001;
       last = now;
       const visible = isVisibleRef.current && !document.hidden;
