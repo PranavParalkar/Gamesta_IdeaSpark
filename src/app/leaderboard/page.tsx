@@ -14,14 +14,14 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4 text-gray-500">
+
+      <main className="container mx-auto px-4 py-10">
+        <div className="mb-10 text-center">
+          <h1 className="text-5xl sm:text-6xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-500 to-cyan-400 drop-shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
             Leaderboard
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Top-rated ideas from our creative community
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+            Top-rated ideas from our creative community — neon bright, fast, and futuristic.
           </p>
         </div>
 
@@ -58,71 +58,69 @@ export default function LeaderboardPage() {
           </Card>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {data?.data?.map((item: any, idx: number) => {
             const rank = idx + 1;
             const isTopThree = rank <= 3;
-            
+            const neon = isTopThree ? (rank === 1 ? 'from-pink-500 to-cyan-400' : rank === 2 ? 'from-purple-400 to-blue-400' : 'from-yellow-400 to-orange-400') : 'from-transparent to-transparent';
+
             return (
               <Card 
-                key={item.id} 
-                hover 
-                className={`animate-fade-in ${isTopThree ? 'ring-2 ring-primary/20' : ''}`}
-                style={{animationDelay: `${idx * 0.1}s`}}
+                key={item.id}
+                hover
+                className={`relative overflow-hidden bg-black/40 backdrop-blur-md border border-[#2b2740] text-white/90 transform transition hover:scale-[1.01]`} 
+                style={{ animationDelay: `${idx * 0.06}s` }}
               >
-                <CardContent className="p-6">
+                {/* neon glow background for top 3 */}
+                {isTopThree && (
+                  <div className={`absolute -inset-1 bg-gradient-to-r ${neon} opacity-30 blur-3xl pointer-events-none`} />
+                )}
+                <CardContent className="p-6 relative z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       {/* Rank Badge */}
-                      <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                        rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white' :
-                        rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-500 text-white' :
-                        rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-600 text-white' :
-                        'bg-muted text-muted-foreground'
+                      <div className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-lg ring-1 ${
+                        isTopThree ? 'ring-white/10' : 'ring-white/5'
                       }`}>
-                        {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${
+                          rank === 1 ? 'bg-gradient-to-r from-pink-400 to-cyan-400 text-black' :
+                          rank === 2 ? 'bg-gradient-to-r from-purple-400 to-blue-400 text-black' :
+                          rank === 3 ? 'bg-gradient-to-r from-yellow-300 to-orange-400 text-black' :
+                          'bg-[#0b0b12] text-white/80'
+                        }`}>
+                          {rank <= 3 ? (rank === 1 ? '🏆' : rank === 2 ? '🥈' : '🥉') : rank}
+                        </div>
                       </div>
-                      
+
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-semibold mb-2 truncate">{item.title}</h3>
-                        <p className="text-muted-foreground line-clamp-2 mb-3">{item.description}</p>
-                        
+                        <h3 className="text-xl font-semibold mb-2 truncate text-white">{item.title}</h3>
+                        <p className="text-white/70 line-clamp-2 mb-3">{item.description}</p>
+
                         {/* Stats */}
-                        <div className="flex items-center space-x-6 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center space-x-6 text-sm text-white/80">
+                          <div className="flex items-center space-x-2">
+                            <svg className="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
                             </svg>
-                            <span className="font-medium">{item.score} points</span>
+                            <span className="font-medium">{item.score}</span>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="flex items-center space-x-2">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="text-muted-foreground">Posted recently</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <span className="text-muted-foreground">Community favorite</span>
+                            <span>Posted recently</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Score Display */}
                     <div className="flex-shrink-0 text-right">
-                      <div className={`text-2xl font-bold ${
-                        rank === 1 ? 'text-yellow-600' :
-                        rank === 2 ? 'text-gray-500' :
-                        rank === 3 ? 'text-orange-600' :
-                        'text-primary'
-                      }`}>
+                      <div className={`text-3xl font-extrabold ${isTopThree ? 'text-white' : 'text-cyan-300'}`}>
                         {item.score}
                       </div>
-                      <div className="text-sm text-muted-foreground">points</div>
+                      <div className="text-sm text-white/70">points</div>
                     </div>
                   </div>
                 </CardContent>
