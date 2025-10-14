@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import { Button } from "../components/ui/Button";
 import { hyperspeedPresets } from "@/lib/hyperspeedPresets";
 import Hyperspeed from "../components/ui/Hyperspeed";
+import BlurText from "../components/ui/BlurText";
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
@@ -23,13 +24,19 @@ export default function Home() {
   <section className="relative py-20 sm:py-32 min-h-[70vh]">
           <div className="mx-auto px-4 relative z-10">
             <div className="text-center text-white space-y-6 animate-fade-in">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
-                Spark Your
-                <span className="block">Creative Ideas</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-                Join the community of innovators. Collect, vote, and showcase college fest ideas that inspire and transform.
-              </p>
+              <div className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight space-y-2 text-center">
+                <BlurText text="Spark Your" delay={120} animateBy="words" direction="top" className="justify-center" />
+                <BlurText text="Creative ideas" delay={260} animateBy="words" direction="top" className="justify-center" />
+              </div>
+              <div className="mt-4">
+                <BlurText
+                  text="Join the community of innovators. Collect, vote, and showcase college fest ideas that inspire and transform."
+                  delay={80}
+                  animateBy="words"
+                  direction="top"
+                  className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
+                />
+              </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
                 <a href="/ideas">
                 <Button size="lg" className="bg-gradient-to-l from-pink-300 to-purple-500 text-primary hover:bg-white/90 text-lg px-8 py-3">
