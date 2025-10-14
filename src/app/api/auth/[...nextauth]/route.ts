@@ -11,6 +11,11 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
   // producing an OAuth redirect with an invalid client_id.
   throw new Error('Missing Google OAuth credentials: set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment (.env.local)');
 }
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
+if (!NEXTAUTH_URL || !NEXTAUTH_SECRET) {
+  throw new Error('Missing NextAuth configuration: set NEXTAUTH_URL and NEXTAUTH_SECRET in your environment');
+}
 
 const authOptions = {
   providers: [
