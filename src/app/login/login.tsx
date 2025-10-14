@@ -1,6 +1,7 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '../../components/ui/Button';
 import PrismaticBurst from '../../components/ui/PrismaticBurst';
@@ -9,18 +10,45 @@ import { Input } from '../../components/ui/Input';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const router = useRouter();
+  const search = useSearchParams();
+
+  // If we were redirected from OAuth (callbackUrl set to /login?oauth=1),
+  // exchange NextAuth session for the app JWT and redirect home.
+  useEffect(() => {
+    const oauth = search.get('oauth');
+    if (oauth === '1') {
+      (async () => {
+        try {
+          const res = await fetch('/api/auth/oauth-token');
+          if (res.ok) {
+            const json = await res.json();
+            sessionStorage.setItem('gamesta_token', json.token);
+            router.push('/');
+          } else {
+            console.error('Failed to exchange oauth token', await res.text());
+          }
+        } catch (e) {
+          console.error('OAuth exchange error', e);
+        }
+      })();
+    }
+  }, [search, router]);
 
   async function submit(e: any) {
     e.preventDefault();
     setError(null);
-    const gmailRegex = /^[^@\s]+@gmail\.com$/i;
-    if (!email || !gmailRegex.test(email)) return setError('Please enter a valid @gmail.com email');
+    // General email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) return setError('Please enter a valid email address');
+    // If registering, require a name
+    if (authMode === 'register' && (!name || name.trim().length === 0)) return setError('Please provide your name');
     if (!password || password.length < 6) return setError('Password must be at least 6 characters');
 
     setLoading(true);
@@ -28,7 +56,7 @@ export default function LoginPage() {
       const endpoint = authMode === 'login' ? '/api/auth/signin' : '/api/auth/signup';
       const res = await fetch(endpoint, { 
         method: 'POST', 
-        body: JSON.stringify({ email, password, name: email.split('@')[0] }), 
+        body: JSON.stringify({ email, password, name: name || email.split('@')[0] }), 
         headers: { 'Content-Type': 'application/json' } 
       });
       if (res.ok) {
@@ -106,6 +134,18 @@ export default function LoginPage() {
                   </svg>
                 }
               />
+              {authMode === 'register' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Full name</label>
+                  <input
+                    type="text"
+                    placeholder="Your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
+              )}
               
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Password</label>
@@ -150,6 +190,23 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" loading={loading} size="lg">
                 {loading ? 'Please wait...' : (authMode === 'login' ? 'Sign in' : 'Create account')}
               </Button>
+
+              <div className="text-center mt-2">
+                <button
+                  type="button"
+                  onClick={() => signIn('google', { callbackUrl: '/login?oauth=1' })}
+                  className="inline-flex items-center justify-center gap-2 w-full rounded-md border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  {/* Inline Google SVG to avoid missing asset */}
+                  <svg className="h-4 w-4" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4285F4" d="M533.5 278.4c0-18.5-1.6-37.2-4.9-55.1H272.1v104.3h146.9c-6.3 34.1-25.3 62.9-54 82.1v68.2h87.4c51.1-47.1 80.1-116.4 80.1-199.5z"/>
+                    <path fill="#34A853" d="M272.1 544.3c73.7 0 135.6-24.5 180.8-66.6l-87.4-68.2c-24.3 16.3-55.4 26-93.4 26-71.7 0-132.5-48.3-154.2-113.1H28.3v70.9C73.2 485 166 544.3 272.1 544.3z"/>
+                    <path fill="#FBBC05" d="M117.9 332.4c-10.8-32.1-10.8-66.5 0-98.6V162.9H28.3c-40.4 79.6-40.4 174.2 0 253.8l89.6-84.3z"/>
+                    <path fill="#EA4335" d="M272.1 107.7c39.9 0 75.9 13.7 104.1 40.7l78.1-78.1C407.7 22.1 345.8 0 272.1 0 166 0 73.2 59.3 28.3 162.9l89.6 70.9C139.6 156 200.4 107.7 272.1 107.7z"/>
+                  </svg>
+                  Continue with Google
+                </button>
+              </div>
 
               <div className="text-center">
                 <button

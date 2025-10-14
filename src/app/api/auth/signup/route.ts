@@ -11,8 +11,9 @@ export async function POST(req: NextRequest) {
   const name = (body.name || '').toString().trim();
   const email = (body.email || '').toString().trim().toLowerCase();
   const password = (body.password || '').toString();
-  const gmailRegex = /^[^@\s]+@gmail\.com$/i;
-  if (!email || !gmailRegex.test(email)) return NextResponse.json({ error: 'Please use a valid @gmail.com address' }, { status: 400 });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) return NextResponse.json({ error: 'Please use a valid email address' }, { status: 400 });
+  if (!name || name.length === 0) return NextResponse.json({ error: 'Please provide your full name' }, { status: 400 });
   if (!password || password.length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
 
   try {

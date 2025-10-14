@@ -13,7 +13,8 @@ export async function POST(req: NextRequest) {
   const name = (body.name || '').toString().trim();
   const email = (body.email || '').toString().trim().toLowerCase();
   const password = (body.password || '').toString();
-  if (!email || !email.includes('@')) return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
   if (!password || password.length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
 
   try {
@@ -21,7 +22,9 @@ export async function POST(req: NextRequest) {
     if ((res as any[]).length === 0) {
       // If user not found, create an account (signup-on-first-use)
       const hash = await bcrypt.hash(password, SALT_ROUNDS);
-      const ins = await query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name || null, email, hash]);
+      // Use provided name if present, otherwise derive from email local-part
+      const insertName = name || email.split('@')[0];
+      const ins = await query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [insertName, email, hash]);
       const userId = (ins as any).insertId;
       const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
       return NextResponse.json({ token, userId });
