@@ -66,9 +66,8 @@ export default function LoginPage() {
               <img 
                 src="/logo.png" 
                 alt="Gamesta" 
-                className="h-16 w-16 object-contain rounded-xl shadow-lg border-2 border-white/20" 
+                className="h-16 w-16 object-contain rounded-xl shadow-lg" 
               />
-              <div className="absolute -top-1 -right-1 h-4 w-4 bg-white rounded-full animate-pulse"></div>
             </div>
             <div className="text-3xl font-bold text-white">
               Gamesta

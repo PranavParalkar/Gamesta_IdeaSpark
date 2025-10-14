@@ -37,8 +37,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 hover:opacity-90 transition">
           <div className="relative">
-            <img src="/logo.png" alt="Gamesta" className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg border border-white/20" />
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full animate-ping" />
+            <img src="/logo.png" alt="Gamesta" className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg" />
           </div>
           <span className="hidden sm:block text-xl font-semibold text-white">Gamesta</span>
         </Link>
