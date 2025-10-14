@@ -27,16 +27,41 @@ export async function GET(req: NextRequest) {
     }
     base = normalizeBaseUrl(base);
     if (!base) return NextResponse.json({ error: 'Unable to determine NEXTAUTH_URL' }, { status: 500 });
-
-    const resp = await fetch(`${base}/api/auth/session`, {
-      headers: { cookie: req.headers.get('cookie') || '' }
-    });
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => 'failed to read body');
-      console.error('Failed to fetch NextAuth session', { base, status: resp.status, body: text });
-      return NextResponse.json({ error: 'No session from NextAuth', details: text }, { status: 401 });
+    // Log incoming cookie header for debugging
+    try {
+      console.error('[oauth-token] incoming cookies:', req.headers.get('cookie'));
+      console.error('[oauth-token] using NEXTAUTH base:', base);
+    } catch (logErr) {
+      console.error('[oauth-token] logging error', logErr);
     }
-    const session = await resp.json();
+
+    let resp;
+    try {
+      resp = await fetch(`${base}/api/auth/session`, {
+        headers: { cookie: req.headers.get('cookie') || '' },
+      });
+    } catch (fetchErr: any) {
+      console.error('[oauth-token] fetch to /api/auth/session failed', fetchErr && fetchErr.stack ? fetchErr.stack : fetchErr);
+      return NextResponse.json({ error: 'Failed to contact NextAuth session endpoint', details: String(fetchErr) }, { status: 500 });
+    }
+    // Read and log response body for debugging
+    let respText = '';
+    try {
+      respText = await resp.text();
+      console.error('[oauth-token] /api/auth/session response status:', resp.status, 'body:', respText);
+    } catch (e) {
+      console.error('[oauth-token] error reading /api/auth/session body', e);
+    }
+    // If it's JSON, parse it back below; if not ok, return diagnostic info
+    if (!resp.ok) {
+      return NextResponse.json({ error: 'No session from NextAuth', status: resp.status, body: respText }, { status: 401 });
+    }
+    let session: any = null;
+    try {
+      session = JSON.parse(respText || '{}');
+    } catch (e) {
+      try { session = await resp.json(); } catch (e2) { session = null; }
+    }
     const email = session?.user?.email;
     const name = session?.user?.name || (email ? email.split('@')[0] : null);
     if (!email) return NextResponse.json({ error: 'No email in session' }, { status: 400 });
