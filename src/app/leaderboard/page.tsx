@@ -100,7 +100,7 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Stats Summary */}
-        {data?.data?.length > 0 && (
+        {/* {data?.data?.length > 0 && (
           <Card className="mt-8 bg-gradient-primary text-white">
             <CardContent className="p-6">
               <div className="grid md:grid-cols-3 gap-6 text-center">
@@ -123,7 +123,7 @@ export default function LeaderboardPage() {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
       </main>
     </div>
   );
