@@ -14,14 +14,40 @@ export async function GET(req: NextRequest) {
   if (!Number.isFinite(offset) || offset < 0) offset = 0;
 
   // Some MySQL setups do not accept prepared params for LIMIT/OFFSET. Inline validated integers.
-  const rows = await query(
-    `SELECT i.id, i.title, i.description, i.created_at, COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count
-     FROM ideas i
-     LEFT JOIN votes v ON v.idea_id = i.id
-     GROUP BY i.id
-     ORDER BY score DESC, vote_count DESC
-     LIMIT ${perPage} OFFSET ${offset}`
-  );
+  // If the request includes an Authorization header we try to resolve the session
+  // and include whether the current user has voted on each idea (voted_by_you).
+  let userId: number | null = null;
+  try {
+    const session = await getSessionFromHeader(req as any);
+    if (session && session.user && session.user.id) userId = Number(session.user.id);
+  } catch (e) {
+    userId = null;
+  }
+
+  let rows: any[] = [];
+  if (userId) {
+    rows = await query(
+      `SELECT i.id, i.title, i.description, i.created_at,
+         COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count,
+         MAX(CASE WHEN vu.voter_user_id = ? AND vu.vote = 1 THEN 1 ELSE 0 END) as voted_by_you
+       FROM ideas i
+       LEFT JOIN votes v ON v.idea_id = i.id
+       LEFT JOIN votes vu ON (vu.idea_id = i.id AND vu.voter_user_id = ?)
+       GROUP BY i.id
+       ORDER BY score DESC, vote_count DESC
+       LIMIT ${perPage} OFFSET ${offset}`,
+      [userId, userId]
+    );
+  } else {
+    rows = await query(
+      `SELECT i.id, i.title, i.description, i.created_at, COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count, 0 as voted_by_you
+       FROM ideas i
+       LEFT JOIN votes v ON v.idea_id = i.id
+       GROUP BY i.id
+       ORDER BY score DESC, vote_count DESC
+       LIMIT ${perPage} OFFSET ${offset}`
+    );
+  }
 
   return new Response(JSON.stringify({ data: rows }), { status: 200 });
 }

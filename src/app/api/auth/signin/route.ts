@@ -20,14 +20,8 @@ export async function POST(req: NextRequest) {
   try {
     const res = await query('SELECT id, password FROM users WHERE email = ?', [email]);
     if ((res as any[]).length === 0) {
-      // If user not found, create an account (signup-on-first-use)
-      const hash = await bcrypt.hash(password, SALT_ROUNDS);
-      // Use provided name if present, otherwise derive from email local-part
-      const insertName = name || email.split('@')[0];
-      const ins = await query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [insertName, email, hash]);
-      const userId = (ins as any).insertId;
-      const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
-      return NextResponse.json({ token, userId });
+      // Do NOT auto-create accounts during signin. Require explicit signup flow.
+      return NextResponse.json({ error: 'No account found for this email. Please sign up first.' }, { status: 404 });
     }
     // User exists: verify password
     const row = (res as any[])[0];

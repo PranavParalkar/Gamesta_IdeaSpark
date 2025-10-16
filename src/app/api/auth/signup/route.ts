@@ -12,7 +12,14 @@ export async function POST(req: NextRequest) {
   const email = (body.email || '').toString().trim().toLowerCase();
   const password = (body.password || '').toString();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Allow only MITAOE college email addresses (mitaoe.ac.in)
+  const mitaoeDomainRegex = /@mitaoe\.ac\.in$/i;
   if (!email || !emailRegex.test(email)) return NextResponse.json({ error: 'Please use a valid email address' }, { status: 400 });
+  if (!mitaoeDomainRegex.test(email)) return NextResponse.json({ error: 'Please register with your MITAOE email (mitaoe.ac.in)' }, { status: 400 });
+  // Ensure local-part is numeric PRN up to 12 digits
+  const localPart = email.split('@')[0] || '';
+  const prnRegex = /^\d{12}$/; // exactly 12 digits
+  if (!prnRegex.test(localPart)) return NextResponse.json({ error: 'Please use your 12-digit numeric PRN as the email local-part' }, { status: 400 });
   if (!name || name.length === 0) return NextResponse.json({ error: 'Please provide your full name' }, { status: 400 });
   if (!password || password.length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
 

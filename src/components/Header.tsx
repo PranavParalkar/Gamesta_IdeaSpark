@@ -33,7 +33,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-3 z-50 w-full backdrop-blur-lg rounded-2xl shadow-md mx-auto">
-      <div className="flex justify-between items-center px-4 py-2 sm:px-6 md:px-10">
+  <div className="flex justify-between items-center px-4 py-2 sm:px-6 md:px-10 relative">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 hover:opacity-90 transition">
           <div className="relative">
@@ -43,7 +43,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-4 bg-gradient-to-l from-pink-400 to-purple-700 px-4 py-2 rounded-full font-medium text-sm text-gray-200">
+  <nav className="hidden md:flex items-center space-x-4 bg-gradient-to-l from-pink-400 to-purple-700 px-4 py-2 rounded-full font-medium text-sm text-gray-200 md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 md:z-10">
           {navItems.map(({ name, href }) => {
             const isActive = pathname === href;
             return (

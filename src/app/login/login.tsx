@@ -52,6 +52,14 @@ export default function LoginPage() {
     // General email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) return setError('Please enter a valid email address');
+    // If registering, require MITAOE college email and numeric PRN local-part (<=12 digits)
+    const mitaoeDomainRegex = /@mitaoe\.ac\.in$/i;
+    if (authMode === 'register') {
+      if (!mitaoeDomainRegex.test(email)) return setError('Please register with your MITAOE email (mitaoe.ac.in)');
+  const local = email.split('@')[0] || '';
+  const prnRegex = /^\d{12}$/; // exactly 12 digits
+  if (!prnRegex.test(local)) return setError('Please use your 12-digit numeric PRN as the email local-part (before @)');
+    }
     // If registering, require a name
     if (authMode === 'register' && (!name || name.trim().length === 0)) return setError('Please provide your name');
     if (!password || password.length < 6) return setError('Password must be at least 6 characters');
@@ -130,7 +138,7 @@ export default function LoginPage() {
               <Input
                 label="Email"
                 type="email"
-                placeholder="yourname@gmail.com"
+                placeholder="prn@mitaoe.ac.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 icon={
@@ -139,6 +147,9 @@ export default function LoginPage() {
                   </svg>
                 }
               />
+              {authMode === 'register' && (
+                <p className="text-xs text-gray-600 mt-1">You must register using your MITAOE email address (mitaoe.ac.in).</p>
+              )}
               {authMode === 'register' && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Full name</label>
@@ -195,6 +206,14 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" loading={loading} size="lg">
                 {loading ? 'Please wait...' : (authMode === 'login' ? 'Sign in' : 'Create account')}
               </Button>
+
+              {authMode === 'register' && (
+                <div className="my-4 flex items-center gap-3">
+                  <div className="flex-1 h-px bg-gray-200" />
+                  <div className="text-sm text-gray-500">OR</div>
+                  <div className="flex-1 h-px bg-gray-200" />
+                </div>
+              )}
 
               <div className="text-center mt-2">
                 <button

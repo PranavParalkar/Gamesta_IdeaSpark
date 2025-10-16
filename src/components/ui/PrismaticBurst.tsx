@@ -294,9 +294,11 @@ const PrismaticBurst = ({
         uDistort: { value: 0 },
         uOffset: { value: [0, 0] },
         uGradient: { value: gradientTex },
-        uNoiseAmount: { value: isMobile ? 0.2 : 0.8 },
+        // reduce noise and steps by default to improve performance
+        uNoiseAmount: { value: isMobile ? 0.15 : 0.6 },
         uRayCount: { value: isMobile ? 0 : 0 },
-        uMaxSteps: { value: isMobile ? 16 : 44 }
+        // default max steps lower — we'll adapt on resize for large canvases
+        uMaxSteps: { value: isMobile ? 12 : 28 }
       }
     });
 
@@ -312,6 +314,21 @@ const PrismaticBurst = ({
       const h = container.clientHeight || 1;
       renderer.setSize(w, h);
       program.uniforms.uResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
+
+      // Adaptively lower ray-march steps for very large canvases to avoid heavy work
+      try {
+        const area = gl.drawingBufferWidth * gl.drawingBufferHeight;
+        // baseline area roughly for 1200x1200
+        const baseline = 1200 * 1200;
+        const baseSteps = isMobile ? 12 : 28;
+        let scale = Math.min(1, baseline / Math.max(area, 1));
+        // don't scale below 0.25
+        scale = Math.max(0.25, scale);
+        const adaptive = Math.max(6, Math.round(baseSteps * scale));
+        program.uniforms.uMaxSteps.value = adaptive;
+      } catch (e) {
+        // ignore
+      }
     };
 
     let ro = null;
@@ -336,7 +353,14 @@ const PrismaticBurst = ({
     if ('IntersectionObserver' in window) {
       io = new IntersectionObserver(
         entries => {
-          if (entries[0]) isVisibleRef.current = entries[0].isIntersecting;
+          if (entries[0]) {
+            const intersecting = entries[0].isIntersecting;
+            isVisibleRef.current = intersecting;
+            // If it became visible, kick off the loop
+            if (intersecting && raf === 0) {
+              raf = requestAnimationFrame(update);
+            }
+          }
         },
         { root: null, threshold: 0.01 }
       );
@@ -345,7 +369,7 @@ const PrismaticBurst = ({
     const onVis = () => {};
     document.addEventListener('visibilitychange', onVis);
 
-  let raf = 0;
+    let raf = 0;
     let last = performance.now();
     let accumTime = 0;
 
@@ -355,7 +379,9 @@ const PrismaticBurst = ({
       if (isMobile) {
         const elapsed = now - last;
         if (elapsed < targetDt) {
-          raf = requestAnimationFrame(update);
+          // schedule next only if still visible
+          if (isVisibleRef.current && !document.hidden) raf = requestAnimationFrame(update);
+          else raf = 0;
           return;
         }
       }
@@ -364,7 +390,8 @@ const PrismaticBurst = ({
       const visible = isVisibleRef.current && !document.hidden;
       if (!pausedRef.current) accumTime += dt;
       if (!visible) {
-        raf = requestAnimationFrame(update);
+        // stop the loop until visibility observer restarts it
+        raf = 0;
         return;
       }
       const tau = 0.02 + Math.max(0, Math.min(1, hoverDampRef.current)) * 0.5;
@@ -375,10 +402,13 @@ const PrismaticBurst = ({
       sm[1] += (tgt[1] - sm[1]) * alpha;
       program.uniforms.uMouse.value = sm;
       program.uniforms.uTime.value = accumTime;
+      // render only when visible
       renderer.render({ scene: meshRef.current });
+      // schedule next frame
       raf = requestAnimationFrame(update);
     };
-    raf = requestAnimationFrame(update);
+    // start the loop only when visible
+    if (isVisibleRef.current && !document.hidden) raf = requestAnimationFrame(update);
 
     return () => {
       cancelAnimationFrame(raf);
