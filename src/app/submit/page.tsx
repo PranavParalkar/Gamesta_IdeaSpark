@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import PrismaticBurst from '../../components/ui/PrismaticBurst';
 import { useRouter } from 'next/navigation';
 import Header from '../../components/Header';
 import { Button } from '../../components/ui/Button';
@@ -59,10 +60,20 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Full-page PrismaticBurst background */}
+      <div className="absolute inset-0 z-0">
+        <PrismaticBurst
+          intensity={1.2}
+          speed={0.5}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
+          mixBlendMode="screen"
+        />
+      </div>
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold mb-4 text-gray-500">
@@ -103,6 +114,7 @@ export default function SubmitPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={6}
                     className="resize-none"
+                    maxLength={500}
                   />
                   <div className="text-xs text-muted-foreground">
                     {description.length}/500 characters

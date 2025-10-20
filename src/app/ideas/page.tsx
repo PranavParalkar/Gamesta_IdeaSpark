@@ -1,5 +1,7 @@
 "use client";
+import { useState } from 'react';
 import useSWR from 'swr';
+import PrismaticBurst from '../../components/ui/PrismaticBurst';
 import Header from '../../components/Header';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
@@ -11,7 +13,9 @@ const fetcher = (url: string) => {
 
 export default function IdeasPage() {
   const { data: ideasData, mutate } = useSWR('/api/ideas', fetcher);
-  
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [animating, setAnimating] = useState<Record<number, boolean>>({});
+
   async function vote(id: number) {
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
     if (!token) return alert('Please sign in to vote');
@@ -21,13 +25,32 @@ export default function IdeasPage() {
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } 
     });
     mutate();
+    // trigger a short burst animation for feedback
+    setAnimating((s) => ({ ...s, [id]: true }));
+    setTimeout(() => {
+      setAnimating((s) => {
+        const copy = { ...s } as Record<number, boolean>;
+        delete copy[id];
+        return copy;
+      });
+    }, 700);
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Full-page PrismaticBurst background (like login) */}
+      <div className="absolute inset-0 z-0">
+        <PrismaticBurst
+          intensity={1.2}
+          speed={0.5}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
+          mixBlendMode="screen"
+        />
+      </div>
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+  <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4  text-gray-500">
             Community Ideas
@@ -64,7 +87,7 @@ export default function IdeasPage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">No ideas yet</h3>
               <p className="text-muted-foreground mb-4">Be the first to submit an innovative idea!</p>
-              <Button>Submit Your Idea</Button>
+              <Button>Submit  </Button>
             </CardContent>
           </Card>
         )}
@@ -106,14 +129,38 @@ export default function IdeasPage() {
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => vote(idea.id)}
-                        className={`flex items-center space-x-1 ${idea.voted_by_you ? 'bg-red-500 text-white' : ''}`}
-                      >
-                        <span>{idea.voted_by_you ? 'Unvote' : 'Vote'}</span>
-                      </Button>
+                    <div
+                      className="w-10 h-10 relative rounded-full overflow-hidden"
+                      onMouseEnter={() => setHoveredId(idea.id)}
+                      onMouseLeave={() => setHoveredId((v) => (v === idea.id ? null : v))}
+                    >
+                      <PrismaticBurst
+                        intensity={0.6}
+                        speed={0.6}
+                        animationType="hover"
+                        colors={["#8b5cf6", "#06b6d4", "#f97316"]}
+                        distort={0}
+                        rayCount={0}
+                        mixBlendMode="screen"
+                        paused={!(hoveredId === idea.id || !!animating[idea.id])}
+                      />
+                      {/* overlay to keep clickable area for accessibility */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-3 h-3 rounded-full bg-white/10 border border-white/5" />
+                      </div>
                     </div>
+                    <Button 
+                      size="sm" 
+                      onClick={() => vote(idea.id)}
+                      className="flex items-center space-x-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                      </svg>
+                      <span>Upvote</span>
+                    </Button>
+                    {/* Downvote removed; only upvotes allowed */}
+                  </div>
                   
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">

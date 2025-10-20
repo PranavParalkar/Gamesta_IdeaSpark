@@ -8,14 +8,26 @@ const fetcher = (url: string) => {
   return fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : undefined }).then((r) => r.json());
 };
 
+import PrismaticBurst from '../../components/ui/PrismaticBurst';
+
 export default function LeaderboardPage() {
   const { data } = useSWR('/api/leaderboard', fetcher);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Full-page PrismaticBurst background */}
+      <div className="absolute inset-0 z-0">
+        <PrismaticBurst
+          intensity={1.2}
+          speed={0.5}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
+          mixBlendMode="screen"
+        />
+      </div>
       <Header />
 
-      <main className="container mx-auto px-4 py-10">
+      <main className="container mx-auto px-4 py-10 relative z-10">
         <div className="mb-10 text-center">
           <h1 className="text-5xl sm:text-6xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-500 to-cyan-400 drop-shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
             Leaderboard
@@ -58,7 +70,8 @@ export default function LeaderboardPage() {
           </Card>
         )}
 
-        <div className="overflow-x-auto">
+        {/* Desktop/table view */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full table-auto text-left text-sm">
             <thead>
               <tr className="text-xs text-white/60 border-b border-white/10 bg-gradient-to-r from-[#1b0b2a] via-[#240c3a] to-[#081426]">
@@ -97,6 +110,31 @@ export default function LeaderboardPage() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile stacked view */}
+        <div className="md:hidden space-y-3">
+          {data?.data?.map((item: any, idx: number) => {
+            const rank = idx + 1;
+            return (
+              <Card key={item.id} className="bg-black/40 border border-white/10">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                        rank === 1 ? 'bg-pink-500 text-black' : rank === 2 ? 'bg-purple-500 text-black' : rank === 3 ? 'bg-yellow-400 text-black' : 'bg-[#0b0b12] text-white/80'
+                      }`}>{rank}</div>
+                      <div>
+                        <div className="font-semibold text-white truncate" style={{ maxWidth: 180 }}>{item.author_name || '—'}</div>
+                        <div className="text-xs text-white/60 truncate" style={{ maxWidth: 180 }}>{item.title}</div>
+                      </div>
+                    </div>
+                    <div className="text-lg font-bold text-cyan-300">{item.score}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Stats Summary */}

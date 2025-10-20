@@ -88,7 +88,8 @@ export async function POST(req: NextRequest) {
   const followedInstagram = !!body.followedInstagram;
 
     if (!title || title.length < 5) return NextResponse.json({ error: 'Title too short' }, { status: 400 });
-    if (!description || description.length < 10) return NextResponse.json({ error: 'Description too short' }, { status: 400 });
+  if (!description || description.length < 10) return NextResponse.json({ error: 'Description too short' }, { status: 400 });
+  if (description.length > 500) return NextResponse.json({ error: 'Description too long (max 500 characters)' }, { status: 400 });
   if (!followedInstagram) return NextResponse.json({ error: 'You must follow our Instagram account before submitting an idea' }, { status: 400 });
 
     const res = await query(
