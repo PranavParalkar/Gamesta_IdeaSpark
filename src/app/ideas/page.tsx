@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import PrismaticBurst from '../../components/ui/PrismaticBurst';
+import StarBorder from '../../components/ui/StarBorder';
 import Header from '../../components/Header';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
@@ -63,94 +64,83 @@ export default function IdeasPage() {
         {!ideasData && (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-6 bg-muted rounded w-3/4"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-2/3"></div>
-                </CardContent>
-              </Card>
+              <StarBorder as="div" key={i} className="block animate-pulse" color="#7a5cff" speed="6s">
+                <div className="relative z-10">
+                  <CardHeader>
+                    <div className="h-6 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-4 bg-muted rounded w-full mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  </CardContent>
+                </div>
+              </StarBorder>
             ))}
           </div>
         )}
 
         {ideasData?.data?.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">No ideas yet</h3>
-              <p className="text-muted-foreground mb-4">Be the first to submit an innovative idea!</p>
-              <Button>Submit  </Button>
-            </CardContent>
-          </Card>
+          <StarBorder as="div" className="block text-center py-12" color="#7a5cff" speed="6s">
+            <div className="relative z-10">
+              <CardContent>
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No ideas yet</h3>
+                <p className="text-muted-foreground mb-4">Be the first to submit an innovative idea!</p>
+                <Button>Submit  </Button>
+              </CardContent>
+            </div>
+          </StarBorder>
         )}
 
         <div className="space-y-6">
           {ideasData?.data?.map((idea: any, index: number) => (
-            <Card key={idea.id} hover className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl mb-2">{idea.title}</CardTitle>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                        </svg>
-                        <span>Score: {idea.score}</span>
+            <StarBorder as="div" key={idea.id} className="block" color="#7a5cff" speed="6s">
+              <div className="relative z-10 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-2">{idea.title}</CardTitle>
+                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                        <div className="flex items-center space-x-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                          </svg>
+                          <span>Score: {idea.score}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>Posted recently</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Posted recently</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                        #{index + 1}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                      #{index + 1}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
+                </CardHeader>
+
                 <CardDescription className="text-base leading-relaxed mb-6">
                   {idea.description}
                 </CardDescription>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div
                       className="w-10 h-10 relative rounded-full overflow-hidden"
                       onMouseEnter={() => setHoveredId(idea.id)}
                       onMouseLeave={() => setHoveredId((v) => (v === idea.id ? null : v))}
-                    >
-                      <PrismaticBurst
-                        intensity={0.6}
-                        speed={0.6}
-                        animationType="hover"
-                        colors={["#8b5cf6", "#06b6d4", "#f97316"]}
-                        distort={0}
-                        rayCount={0}
-                        mixBlendMode="screen"
-                        paused={!(hoveredId === idea.id || !!animating[idea.id])}
-                      />
-                      {/* overlay to keep clickable area for accessibility */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-3 h-3 rounded-full bg-white/10 border border-white/5" />
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
+                    />
+                    <Button
+                      size="sm"
                       onClick={() => vote(idea.id)}
                       className="flex items-center space-x-1"
                     >
@@ -159,26 +149,10 @@ export default function IdeasPage() {
                       </svg>
                       <span>Upvote</span>
                     </Button>
-                    {/* Downvote removed; only upvotes allowed */}
-                  </div>
-                  
-                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      <span>Discuss</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      <span>Save</span>
-                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </StarBorder>
           ))}
         </div>
       </main>

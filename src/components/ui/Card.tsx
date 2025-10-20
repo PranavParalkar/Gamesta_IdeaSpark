@@ -4,15 +4,20 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   hover?: boolean;
   gradient?: boolean;
+  transparent?: boolean;
 }
 
-export function Card({ children, className = '', hover = false, gradient = false, ...props }: CardProps) {
-  const baseClasses = 'rounded-xl border border-border bg-card text-card-foreground shadow-sm';
+export function Card({ children, className = '', hover = false, gradient = false, transparent = false, ...props }: CardProps) {
+  // new optional: props.borderless to remove borders
+  const borderless = (props as any).borderless as boolean | undefined;
+  const baseClasses = borderless ? 'rounded-xl bg-card text-card-foreground shadow-sm' : 'rounded-xl border border-border bg-card text-card-foreground shadow-sm';
+  // translucent backdrop variant — subtle white tint + blur; borderless variant removes border
+  const baseTransparent = borderless ? 'rounded-xl bg-white/5 backdrop-blur-sm text-card-foreground shadow-sm' : 'rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm text-card-foreground shadow-sm';
   const hoverClasses = hover ? 'hover:shadow-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer' : '';
   const gradientClasses = gradient ? 'bg-gradient-primary text-white border-transparent' : '';
-  
+  const appliedBase = transparent ? baseTransparent : baseClasses;
   return (
-    <div className={`${baseClasses} ${hoverClasses} ${gradientClasses} ${className}`} {...props}>
+    <div className={`${appliedBase} ${hoverClasses} ${gradientClasses} ${className}`} {...props}>
       {children}
     </div>
   );
