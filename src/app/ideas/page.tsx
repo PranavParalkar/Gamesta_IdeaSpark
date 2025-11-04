@@ -1,54 +1,67 @@
 "use client";
-import { useState } from 'react';
-import useSWR from 'swr';
-import PrismaticBurst from '../../components/ui/PrismaticBurst';
-import StarBorder from '../../components/ui/StarBorder';
-import Header from '../../components/Header';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { useState, useRef, useEffect } from "react";
+import useSWR from "swr";
+import { motion } from "framer-motion";
+import { Button } from "../../components/ui/Button";
+import PrismaticBurst from "../../components/ui/PrismaticBurst";
+import Header from "../../components/Header";
+import toast from "react-hot-toast";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "../../components/ui/Card";
 
 const fetcher = (url: string) => {
-  const token = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
-  return fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : undefined }).then((r) => r.json());
+  const token =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("gamesta_token")
+      : null;
+  return fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  }).then((r) => r.json());
 };
 
 export default function IdeasPage() {
-  const { data: ideasData, mutate } = useSWR('/api/ideas', fetcher);
+  const { data: ideasData, mutate } = useSWR("/api/ideas", fetcher);
   const [animating, setAnimating] = useState<Record<number, boolean>>({});
+  const [sort, setSort] = useState<"recent" | "popular">("popular");
 
-  // ✅ Page-level scroll tracking (no hydration errors)
-  const { scrollYProgress } = useScroll();
-  const lineY = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  // Refs to scroll to idea cards
+  const ideaRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   async function vote(id: number) {
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_token') : null;
+    const token =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("gamesta_token")
+        : null;
     if (!token) {
-      toast.error('Please sign in to vote');
+      toast.error("Please sign in to vote");
       return;
     }
 
-    // optimistic update kept
     setAnimating((s) => ({ ...s, [id]: true }));
-    toast.success('Voted ✔️');
+    toast.success("Voted ✔️");
 
     try {
       const res = await fetch(`/api/ideas/${id}/vote`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ ideaId: id, vote: 1 }),
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
-      if (!res.ok) {
-        throw new Error('Vote failed');
-      }
+      if (!res.ok) throw new Error("Vote failed");
       mutate();
-    } catch (err) {
-      toast.error('Vote failed. Try again.');
+    } catch {
+      toast.error("Vote failed. Try again.");
     } finally {
       setTimeout(() => {
         setAnimating((s) => {
-          const copy = { ...s } as Record<number, boolean>;
+          const copy = { ...s };
           delete copy[id];
           return copy;
         });
@@ -56,180 +69,171 @@ export default function IdeasPage() {
     }
   }
 
+  const sortedIdeas =
+    ideasData?.data?.sort((a: any, b: any) =>
+      sort === "popular" ? b.score - a.score : b.id - a.id
+    ) || [];
+
+  // Smooth scroll to idea
+  const scrollToIdea = (id: number) => {
+    const element = ideaRefs.current[id];
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
+      {/* 🌌 Background - Make it fixed and full-screen */}
+      <div className="fixed inset-0">
         <PrismaticBurst
-          intensity={0.5}
-          speed={0.5}
-          animationType="rotate3d"
-          colors={['#ff5ec8', '#7a5cff', '#00f6ff']}
+          intensity={0.6}
+          speed={0.8}
+          animationType="wave"
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
           mixBlendMode="screen"
         />
       </div>
 
-      <Header />
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-50">
+        <Header />
+      </div>
 
-      <main className="container mx-auto px-4 py-8 relative z-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2 text-white">Community Ideas</h1>
-          <p className="text-md text-muted-foreground">
-            Discover innovative ideas from talented students and vote for your favorites.
-          </p>
-        </div>
-
-        {!ideasData && (
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <StarBorder as="div" key={i} className="block animate-pulse " color="#7a5cff" speed="6s">
-                <div className="relative z-10">
-                  <CardHeader>
-                    <div className="h-6 bg-muted rounded w-3/4"></div>
-                    <div className="h-4 bg-muted rounded w-1/2"></div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                    <div className="h-4 bg-muted rounded w-2/3"></div>
-                  </CardContent>
-                </div>
-              </StarBorder>
-            ))}
-          </div>
-        )}
-
-        {ideasData?.data?.length === 0 && (
-          <StarBorder as="div" className="block text-center py-12" color="#7a5cff" speed="6s">
-            <div className="relative z-10">
-              <CardContent>
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">No ideas yet</h3>
-                <p className="text-muted-foreground mb-4">Be the first to submit an innovative idea!</p>
-                <Button>Submit</Button>
-              </CardContent>
-            </div>
-          </StarBorder>
-        )}
-
-        {/* ✅ Timeline Layout using global scroll */}
-        {ideasData?.data && (
-          <div className="relative w-full py-20">
-            {/* Animated line that reacts to page scroll */}
-            <motion.div
-              style={{ height: lineY }}
-              className="absolute left-1/2 top-0 w-1 h-full bg-gradient-to-b from-purple-500 via-pink-400 to-transparent rounded-full transform -translate-x-1/2"
-            />
-
-            <div className="relative">
-              {ideasData.data.map((idea: any, index: number) => (
-                <motion.div
+      {/* Main Layout Container */}
+      <div className="relative z-10 flex min-h-[calc(100vh-80px)]">
+        {/* 🧭 Left Ranking Sidebar */}
+        {sortedIdeas.length > 0 && (
+          <aside className="hidden md:flex flex-col items-center sticky top-24 h-[calc(100vh-6rem)] pt-24 pl-6 w-24">
+            <div className="absolute top-0  w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-transparent h-full rounded-full" />
+            <div className="flex flex-col gap-6 relative z-10">
+              {sortedIdeas.map((idea: any, index: number) => (
+                <motion.button
                   key={idea.id}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -80 : 80 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.05 }}
-                  viewport={{ once: true }}
-                  className={`relative mx-40 flex ${
-                    index % 2 === 0 ? 'justify-start' : 'justify-end'
-                  }`}
+                  whileHover={{ scale: 1.2 }}
+                  onClick={() => scrollToIdea(idea.id)}
+                  className="relative w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold rounded-full flex items-center justify-center shadow-lg hover:shadow-pink-400/30 transition"
                 >
-                  {/* Connector Dot */}
-                  <div className="absolute left-1/2 w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full transform -translate-x-1/2 shadow-lg shadow-purple-500/30"></div>
-
-                  <motion.div
-                    whileHover={{
-                      scale: 1.03,
-                      rotateY: 3,
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
-                    }}
-                    className="w-[45%] bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 relative z-10"
-                  >
-                    {/* Rank Badge */}
-                    <div className="absolute -top-4 -right-4 w-12 h-12">
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full animate-spin-slow" />
-                      <div className="absolute inset-0.5 bg-black rounded-full flex items-center justify-center text-white font-bold">
-                        #{index + 1}
-                      </div>
-                    </div>
-
-                    <CardHeader>
-                      <CardTitle className="text-xl mb-2 text-white group-hover:text-purple-400 transition-colors">
-                        {idea.title}
-                      </CardTitle>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <span className="relative flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
-                          </span>
-                          <span>Score: {idea.score}</span>
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span>Posted recently</span>
-                        </span>
-                      </div>
-                    </CardHeader>
-
-                    <CardDescription className="text-base leading-relaxed mb-6 line-clamp-3 hover:line-clamp-none transition-all duration-300">
-                      {idea.description}
-                    </CardDescription>
-
-                    {/* Interactive Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-muted/20">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-medium shadow-lg hover:shadow-purple-500/25 transition-shadow"
-                        onClick={() => vote(idea.id)}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 11l5-5m0 0l5 5m-5-5v12"
-                          />
-                        </svg>
-                        <span>Upvote</span>
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                </motion.div>
+                  #{index + 1}
+                </motion.button>
               ))}
             </div>
-
-            <style jsx>{`
-              @keyframes spin-slow {
-                from {
-                  transform: rotate(0deg);
-                }
-                to {
-                  transform: rotate(360deg);
-                }
-              }
-              .animate-spin-slow {
-                animation: spin-slow 10s linear infinite;
-              }
-            `}</style>
-          </div>
+          </aside>
         )}
-      </main>
+
+        {/* 🌟 Main Content */}
+        <main className="flex-1 px-6 py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <h1 className="text-5xl font-extrabold text-white mb-3 tracking-tight">
+                Community Ideas
+              </h1>
+              <p className="text-muted-foreground">
+                Explore innovative ideas and vote for the most promising ones.
+              </p>
+
+              {/* Filter Bar */}
+              <div className="flex justify-center mt-6 gap-3">
+                <Button
+                  onClick={() => setSort("popular")}
+                  className={`px-4 py-2 rounded-full ${
+                    sort === "popular"
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                      : "bg-gradient-to-r from-purple-300 to-pink-300 text-gray-300 hover:bg-white/20"
+                  }`}
+                >
+                  🔥 Most Popular
+                </Button>
+                <Button
+                  onClick={() => setSort("recent")}
+                  className={`px-4 py-2 rounded-full ${
+                    sort === "recent"
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                      : "bg-gradient-to-r from-purple-300 to-pink-300 text-gray-300 hover:bg-white/20"
+                  }`}
+                >
+                  🕓 Most Recent
+                </Button>
+              </div>
+            </div>
+
+            {/* 🚀 Masonry Grid Layout */}
+            {!ideasData ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-60 bg-white/10 rounded-2xl border border-white/10"
+                  ></div>
+                ))}
+              </div>
+            ) : sortedIdeas.length === 0 ? (
+              <div className="text-center py-16 text-gray-300">
+                <h3 className="text-2xl font-semibold mb-2">No ideas yet 😕</h3>
+                <p>Be the first to share something amazing!</p>
+                <Button className="mt-4">Submit Idea</Button>
+              </div>
+            ) : (
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                {sortedIdeas.map((idea: any, index: number) => (
+                  <motion.div
+                    key={idea.id}
+                    ref={(el) => (ideaRefs.current[idea.id] = el)}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.02 }}
+                    viewport={{ once: true }}
+                  >
+                    <Card className="relative mb-6 break-inside-avoid bg-white/10 border border-white/10 rounded-2xl backdrop-blur-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-transform hover:scale-[1.02]">
+                      <CardHeader>
+                        <CardTitle className="text-xl text-white mb-2">
+                          {idea.title}
+                        </CardTitle>
+                        <p className="text-sm text-purple-300 font-medium">
+                          Score: {idea.score}
+                        </p>
+                      </CardHeader>
+
+                      <CardContent>
+                        <CardDescription className="text-base text-gray-300 mb-4">
+                          {idea.description}
+                        </CardDescription>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => vote(idea.id)}
+                            className="flex items-center gap-2 text-sm px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-semibold shadow-lg hover:shadow-purple-500/25"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M7 11l5-5m0 0l5 5m-5-5v12"
+                              />
+                            </svg>
+                            Upvote
+                          </motion.button>
+                          <span className="text-xs text-gray-400">
+                            #{index + 1}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
