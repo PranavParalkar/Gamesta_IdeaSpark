@@ -86,30 +86,25 @@ export default function SubmitPage() {
       <Header />
 
       <motion.main
-        className="container mx-auto px-4 py-12 relative z-10"
+        className="container mx-auto px-4  relative z-10"
         style={{ y: yOffset }}
         initial={{ opacity: 0, y: 80 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <motion.div
-          className="max-w-2xl mx-auto"
+          className="max-w-4xl mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 1 }}
         >
           <motion.div
-            className="mb-10 text-center"
+            className="mb-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h1 className="text-5xl font-extrabold mb-4 bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-cyan-300 text-transparent bg-clip-text drop-shadow-lg">
-              Submit Your Idea 💡
-            </h1>
-            <p className="text-lg text-gray-300">
-              Share your innovative college fest idea and inspire creativity in our community.
-            </p>
+           
           </motion.div>
 
           {/* Main Card */}
