@@ -19,7 +19,6 @@ export default function ProfilePage() {
         />
       </div>
 
-      <Header />
 
       <main className="container mx-auto px-4 py-16 relative z-10">
         {/* Animated Greeting Section */}

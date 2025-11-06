@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import Header from "../../components/Header";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
 
 const timelineData = [
@@ -50,9 +49,8 @@ export default function EventsPage() {
         />
       </div>
 
-      <Header />
 
-      <main className="max-w-5xl mx-auto px-6  relative">
+      <main className="max-w-5xl mt-24 mx-auto px-6  relative">
         {/* Center Timeline Line */}
         <div className="absolute left-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-pink-500 rounded-full opacity-70 z-0" />
 

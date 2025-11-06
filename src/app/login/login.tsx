@@ -80,157 +80,156 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#121212] via-[#1e003e] to-[#003366] flex items-center justify-center p-6 overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 z-0">
-        <PrismaticBurst
-          intensity={0.6}
-          speed={0.8}
-          animationType="rotate3d"
-          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
-          mixBlendMode="screen"
-        />
+    <div className="relative min-h-screen w-full">
+      {/* Fixed Background */}
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#121212] via-[#1e003e] to-[#003366]" />
+        <div className="absolute inset-0">
+          <PrismaticBurst
+            intensity={0.6}
+            speed={0.8}
+            animationType="rotate3d"
+            colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
+            mixBlendMode="screen"
+          />
+        </div>
       </div>
 
-      <div className="w-full max-w-md relative z-10 space-y-8">
-        {/* Logo & Branding */}
-        <div className="text-center">
-          <Link href="/" className="inline-flex flex-col items-center">
-            <img 
-              src="/logo.png" 
-              alt="Gamesta" 
-              className="h-20 w-20 object-contain rounded-2xl shadow-2xl border border-white/20 mb-3"
-            />
-            <h1 className="text-4xl font-extrabold text-white tracking-wide">Gamesta</h1>
-          </Link>
-         
-        </div>
+      {/* Scrollable Content Container */}
+      <div className="relative z-10 min-h-screen w-full flex flex-col">
+        <main className="flex-1 flex items-center justify-center px-4 py-16">
+          <div className="w-full max-w-md">
+            {/* Auth Card */}
+            <Card className="backdrop-blur-md bg-white/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] rounded-3xl">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-white">
+                  {authMode === 'login' ? 'Welcome Back 👋' : 'Create Your Account ✨'}
+                </CardTitle>
+                <CardDescription className="text-white/70 mt-1">
+                  {authMode === 'login' 
+                    ? 'Sign in to continue your journey' 
+                    : 'Join the Gamesta community of creators'}
+                </CardDescription>
+              </CardHeader>
 
-        {/* Auth Card */}
-        <Card className="backdrop-blur-md bg-white/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] rounded-3xl transition-all">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-white">
-              {authMode === 'login' ? 'Welcome Back 👋' : 'Create Your Account ✨'}
-            </CardTitle>
-            <CardDescription className="text-white/70 mt-1">
-              {authMode === 'login' 
-                ? 'Sign in to continue your journey' 
-                : 'Join the Gamesta community of creators'}
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="p-6">
-            <form onSubmit={submit} className="space-y-6">
-              {/* Email */}
-              <Input
-                label="Email"
-                type="email"
-                placeholder="prn@mitaoe.ac.in"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className='bg-white/10'
-              />
-              {authMode === 'register' && (
-                <>
-                  <p className="text-xs text-white/60 mt-1">
-                    Register with your MITAOE email only.
-                  </p>
+              <CardContent className="p-6">
+                <form onSubmit={submit} className="space-y-6">
+                  {/* Email Input */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/80">Full Name</label>
+                    <label className="text-sm font-medium text-white/80">Email</label>
                     <input
-                      type="text"
-                      placeholder="Enter your name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="flex h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus-visible:outline-none"
+                      type="email"
+                      placeholder="prn@mitaoe.ac.in"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
-                </>
-              )}
 
-              {/* Password */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white/80">Password</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 py-2 pr-10 text-sm text-white placeholder:text-white/50 focus-visible:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70"
+                  {/* Registration Fields */}
+                  {authMode === 'register' && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-white/60">
+                        Register with your MITAOE email only.
+                      </p>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-white/80">Full Name</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="flex h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Password Input with Show/Hide */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="flex h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 py-2 pr-10 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+                      >
+                        {showPassword ? '🙈' : '👁️'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Error */}
+                  {error && (
+                    <div className="p-3 rounded-lg bg-red-500/20 border border-red-400/40 text-sm text-red-200 text-center">
+                      {error}
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    className="w-full text-white bg-gradient-to-r from-[#6f0684] via-[#622195] to-[#ff5ec8] py-2 rounded-lg text-base font-semibold shadow-lg border-0"
+                    loading={loading}
                   >
-                    {showPassword ? '🙈' : '👁️'}
-                  </button>
-                </div>
-              </div>
+                    {loading ? 'Please wait...' : authMode === 'login' ? 'Sign In' : 'Register'}
+                  </Button>
 
-              {/* Error */}
-              {error && (
-                <div className="p-3 rounded-lg bg-red-500/20 border border-red-400/40 text-sm text-red-200 text-center">
-                  {error}
-                </div>
-              )}
+                  {/* Google Login */}
+                  {authMode === 'register' && (
+                    <div className="my-5 flex items-center gap-3">
+                      <div className="flex-1 h-px bg-white/30" />
+                      <span className="text-sm text-white/60">OR</span>
+                      <div className="flex-1 h-px bg-white/30" />
+                    </div>
+                  )}
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full text-white bg-gradient-to-r from-[#7a5cff] via-[#00f6ff] to-[#ff5ec8] py-2 rounded-lg text-base font-semibold shadow-lg border-0"
-                loading={loading}
-              >
-                {loading ? 'Please wait...' : authMode === 'login' ? 'Sign In' : 'Register'}
-              </Button>
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => signIn('google', { callbackUrl: '/login?oauth=1' })}
+                      className="w-full flex items-center justify-center gap-3 bg-white/10 border border-white/20 rounded-lg py-2 text-white/90"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 533.5 544.3">
+                        <path fill="#4285F4" d="M533.5 278.4c0-18.5-1.6-37.2-4.9-55.1H272.1v104.3h146.9c-6.3 34.1-25.3 62.9-54 82.1v68.2h87.4c51.1-47.1 80.1-116.4 80.1-199.5z"/>
+                        <path fill="#34A853" d="M272.1 544.3c73.7 0 135.6-24.5 180.8-66.6l-87.4-68.2c-24.3 16.3-55.4 26-93.4 26-71.7 0-132.5-48.3-154.2-113.1H28.3v70.9C73.2 485 166 544.3 272.1 544.3z"/>
+                        <path fill="#FBBC05" d="M117.9 332.4c-10.8-32.1-10.8-66.5 0-98.6V162.9H28.3c-40.4 79.6-40.4 174.2 0 253.8l89.6-84.3z"/>
+                        <path fill="#EA4335" d="M272.1 107.7c39.9 0 75.9 13.7 104.1 40.7l78.1-78.1C407.7 22.1 345.8 0 272.1 0 166 0 73.2 59.3 28.3 162.9l89.6 70.9C139.6 156 200.4 107.7 272.1 107.7z"/>
+                      </svg>
+                      Continue with Google
+                    </button>
+                  </div>
 
-              {/* Google Login */}
-              {authMode === 'register' && (
-                <div className="my-5 flex items-center gap-3">
-                  <div className="flex-1 h-px bg-white/30" />
-                  <span className="text-sm text-white/60">OR</span>
-                  <div className="flex-1 h-px bg-white/30" />
-                </div>
-              )}
+                  {/* Toggle Mode */}
+                  <div className="text-center mt-3">
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                      className="text-sm text-white/70"
+                    >
+                      {authMode === 'login' ? "Don’t have an account? " : "Already have an account? "}
+                      <span className="text-[#00f6ff] font-medium">
+                        {authMode === 'login' ? 'Sign up' : 'Sign in'}
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => signIn('google', { callbackUrl: '/login?oauth=1' })}
-                  className="w-full flex items-center justify-center gap-3 bg-white/10 border border-white/20 rounded-lg py-2 text-white/90"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 533.5 544.3">
-                    <path fill="#4285F4" d="M533.5 278.4c0-18.5-1.6-37.2-4.9-55.1H272.1v104.3h146.9c-6.3 34.1-25.3 62.9-54 82.1v68.2h87.4c51.1-47.1 80.1-116.4 80.1-199.5z"/>
-                    <path fill="#34A853" d="M272.1 544.3c73.7 0 135.6-24.5 180.8-66.6l-87.4-68.2c-24.3 16.3-55.4 26-93.4 26-71.7 0-132.5-48.3-154.2-113.1H28.3v70.9C73.2 485 166 544.3 272.1 544.3z"/>
-                    <path fill="#FBBC05" d="M117.9 332.4c-10.8-32.1-10.8-66.5 0-98.6V162.9H28.3c-40.4 79.6-40.4 174.2 0 253.8l89.6-84.3z"/>
-                    <path fill="#EA4335" d="M272.1 107.7c39.9 0 75.9 13.7 104.1 40.7l78.1-78.1C407.7 22.1 345.8 0 272.1 0 166 0 73.2 59.3 28.3 162.9l89.6 70.9C139.6 156 200.4 107.7 272.1 107.7z"/>
-                  </svg>
-                  Continue with Google
-                </button>
-              </div>
-
-              {/* Toggle Mode */}
-              <div className="text-center mt-3">
-                <button
-                  type="button"
-                  onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                  className="text-sm text-white/70"
-                >
-                  {authMode === 'login' ? "Don’t have an account? " : "Already have an account? "}
-                  <span className="text-[#00f6ff] font-medium">
-                    {authMode === 'login' ? 'Sign up' : 'Sign in'}
-                  </span>
-                </button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Bottom Info */}
-        <div className="text-center text-white/70 mt-6 text-sm tracking-wide">
-          © 2025 Gamesta — Built with 💜 for MITAOE Innovators
-        </div>
+            {/* Footer */}
+            <div className="text-center text-white/70 text-sm tracking-wide mt-6">
+              © 2025 Gamesta — Built with 💜 for MITAOE Innovators
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

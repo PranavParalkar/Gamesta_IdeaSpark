@@ -18,7 +18,6 @@ export default function Home() {
 
       {/* Foreground Content */}
   <div className="relative z-10">
-        <Header />
 
         {/* Hero Section */}
   <section className="relative py-20 sm:py-32 min-h-[70vh]">

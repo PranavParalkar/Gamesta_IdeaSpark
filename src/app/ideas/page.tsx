@@ -107,27 +107,36 @@ export default function IdeasPageWithTimeline() {
   useEffect(() => {}, []);
 
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* 🌌 Background - Make it fixed and full-screen */}
-      <div className="fixed inset-0 -z-10">
+    <div className="min-h-screen  relative">
+     {/* 🌌 Animated Background */}
+      <motion.div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#18003c,_#060014_70%)]"
+        animate={{
+          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+        }}
+        transition={{
+          duration: 40,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{ backgroundSize: "400% 400%" }}
+      />
+
+      {/* 🌈 Energy Overlay */}
+      <div className="absolute inset-0 mix-blend-screen opacity-70 z-0">
         <PrismaticBurst
           intensity={0.6}
-          speed={0.8}
-          animationType="wave"
-          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
-          mixBlendMode="screen"
+          speed={0.6}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
         />
       </div>
 
-      {/* Fixed Header */}
-      <div className="sticky top-3 z-50">
-        <Header />
-      </div>
 
       
 
       {/* Main Layout Container */}
-      <div className="relative z-10 flex min-h-[calc(100vh-80px)]">
+      <div className="absolute z-10 mt-12 flex min-h-[calc(100vh-80px)]">
         {/* 🧭 Left Ranking Sidebar */}
         {sortedIdeas.length > 0 && (
           <aside className="hidden md:flex flex-col items-center sticky top-24 h-[calc(100vh-6rem)] pt-24 pl-6 w-24">

@@ -155,7 +155,7 @@ export default function Header() {
               </Link>
             ))}
 
-            <div className="border-t border-white/10 pt-3">
+            {/* <div className="border-t border-white/10 pt-3">
               {token ? (
                 <>
                   <Link href="/profile" onClick={() => setMenuOpen(false)} className="block hover:text-pink-400 transition">Profile</Link>
@@ -174,7 +174,7 @@ export default function Header() {
                   Sign In
                 </Link>
               )}
-            </div>
+            </div> */}
           </motion.div>
         )}
       </AnimatePresence>
