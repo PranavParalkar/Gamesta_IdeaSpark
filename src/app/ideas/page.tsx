@@ -38,6 +38,8 @@ export default function IdeasPageWithTimeline() {
   const { data: ideasData, mutate } = useSWR("/api/ideas", fetcher);
   const [animating, setAnimating] = useState<Record<number, boolean>>({});
   const [sort, setSort] = useState<"recent" | "popular">("popular");
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(new Date());
 
   // Refs to scroll to idea cards
   const ideaRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -111,7 +113,7 @@ export default function IdeasPageWithTimeline() {
         <PrismaticBurst
           intensity={0.6}
           speed={0.8}
-          animationType="rotate3d"
+          animationType="wave"
           colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
           mixBlendMode="screen"
         />
@@ -121,6 +123,8 @@ export default function IdeasPageWithTimeline() {
       <div className="sticky top-3 z-50">
         <Header />
       </div>
+
+      
 
       {/* Main Layout Container */}
       <div className="relative z-10 flex min-h-[calc(100vh-80px)]">
@@ -144,7 +148,7 @@ export default function IdeasPageWithTimeline() {
         )}
 
         {/* 🌟 Main Content */}
-        <main className="flex-1 px-6 py-12">
+        <main className={`flex-1 px-6 py-12 ${showTimeline ? "lg:ml-[20rem]" : ""}`}>
           <div className="max-w-8xl mx-auto">
             <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between">
               <div>

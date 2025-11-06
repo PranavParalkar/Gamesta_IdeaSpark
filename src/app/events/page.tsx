@@ -3,128 +3,96 @@ import React from "react";
 import { motion } from "framer-motion";
 import Header from "../../components/Header";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
-import LaserFlow from "../../components/ui/LaserFlow";
-// Removed calendar icon import since day labels are hidden
 
-// -----------------------------
-// Timeline data
-// -----------------------------
-const timelineData = {
-  saturday: [
-    { time: "10:30 AM – 1:00 PM", event: "BGMI Tournament ", club: "Vertex GDNA" },
-    { time: "10:30 AM – 1:00 PM", event: "Chess Tournament", club: "Chess Club" },
-    { time: "10:30 AM – 1:00 PM", event: "Debate Contest", club: "Nekotachi Podcast Club" },
-    { time: "2:00 PM – 4:00 PM", event: "Drone Race Competition", club: "Drone Club MITAOE" },
-    { time: "2:00 PM – 4:00 PM", event: "VR Experience", club: "SPARK" },
-    { time: "2:00 PM – 4:00 PM", event: "Photography Scavenger Hunt", club: "Shutterbugs" },
-    { time: "4:00 PM – 6:00 PM", event: "Dance Face-off", club: "Menace Dance Club" },
-    { time: "4:00 PM – 6:00 PM", event: "Flying Simulator", club: "Aero Club MITAOE" },
-    { time: "6:00 PM – 7:00 PM", event: "Ramp Walk", club: "Foreign Language Club" },
-  ],
-  sunday: [
-    { time: "10:30 AM – 12:00 PM", event: "GSQ (Google Squid Games)", club: "Google Developer Group" },
-    { time: "10:30 AM – 12:00 PM", event: "Drone Simulator Competition", club: "Drone Club MITAOE" },
-    { time: "12:00 PM – 1:00 PM", event: "AeroCAD Demonstrations", club: "Aero Club MITAOE" },
-    { time: "12:00 PM – 1:00 PM", event: "Poster Design Competition", club: "Ajaanvriksha" },
-    { time: "2:00 PM – 3:30 PM", event: "Mobile Robocar Racing", club: "Invictus Robotics" },
-    { time: "2:00 PM – 3:30 PM", event: "Strongest on Campus", club: "Rotaract Club of MITAOE" },
-    { time: "4:30 PM – 6:00 PM", event: "Valorant Tournament – Finals", club: "Vertex GDNA" },
-  ],
-};
-
-// Build left/right columns (hide time/day; show only names). Sort alphabetically within each side.
-const leftEvents = timelineData.saturday
-  .map((e) => ({ event: e.event.trim() }))
-  .sort((a, b) => a.event.localeCompare(b.event));
-
-const rightEvents = timelineData.sunday
-  .map((e) => ({ event: e.event.trim() }))
-  .sort((a, b) => a.event.localeCompare(b.event));
+const timelineData = [
+  "BGMI Tournament",
+  "Chess Tournament",
+  "Debate Contest",
+  "Drone Race Competition",
+  "VR Experience",
+  "Photography Scavenger Hunt",
+  "Dance Face-off",
+  "Flying Simulator",
+  "Ramp Walk",
+  "GSQ (Google Squid Games)",
+  "Drone Simulator Competition",
+  "AeroCAD Demonstrations",
+  "Poster Design Competition",
+  "Mobile Robocar Racing",
+  "Strongest on Campus",
+  "Valorant Tournament – Finals",
+];
 
 export default function EventsPage() {
   return (
-    <div className="min-h-screen bg-background relative">
-      <div className="fixed inset-0 -z-10">
+    <div className="min-h-screen w-full text-white relative overflow-hidden">
+      {/* 🌌 Animated Background */}
+      <motion.div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#18003c,_#060014_70%)]"
+        animate={{
+          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+        }}
+        transition={{
+          duration: 40,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{ backgroundSize: "400% 400%" }}
+      />
+
+      {/* 🌈 Energy Overlay */}
+      <div className="absolute inset-0 mix-blend-screen opacity-70 z-0">
         <PrismaticBurst
           intensity={0.6}
-          speed={0.8}
+          speed={0.6}
           animationType="rotate3d"
-          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
-          mixBlendMode="screen"
+          colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
         />
       </div>
 
-      {/* Center LaserFlow column: vertical beam from bottom upwards */}
-      {/* Positioned within layout below; no global fixed element here */}
+      <Header />
 
-      <div className="sticky top-3 z-50">
-        <Header />
-      </div>
+      <main className="max-w-5xl mx-auto px-6  relative">
+        {/* Center Timeline Line */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-pink-500 rounded-full opacity-70 z-0" />
 
-      <main className="flex-1 px-6 pb-16 pt-24">
-        <div className="max-w-6xl mx-auto flex flex-col items-center gap-12">
-          <div className="text-center space-y-3">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white">Events</h1>
-            <p className="text-base text-gray-200 max-w-2xl mx-auto">
-              Discover the festival lineup. We’re showcasing the events only—no dates or times—so you can focus on what excites you.
-            </p>
-          </div>
-          <div className="relative w-full">
-            <div className="grid gap-8 lg:grid-cols-[minmax(260px,1fr)_220px_minmax(260px,1fr)] items-start">
-              {/* Left column */}
-              <ul className="space-y-4 order-1">
-                {leftEvents.map((it, idx) => (
-                  <motion.li
-                    key={`L-${it.event}-${idx}`}
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: idx * 0.03 }}
-                    viewport={{ once: true }}
-                  >
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/8 backdrop-blur-md">
-                      <h4 className="text-lg font-semibold text-white/95">{it.event}</h4>
-                    </div>
-                  </motion.li>
-                ))}
-              </ul>
+        {/* Timeline Items */}
+        <ul className="relative z-10 space-y-5 md:space-y-0 mt-10">
+          {timelineData.map((event, idx) => {
+            const isLeft = idx % 2 === 0;
+            return (
+              <motion.li
+                key={idx}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.05 }}
+                viewport={{ once: true }}
+                className={`relative flex flex-col md:flex-row items-center ${
+                  isLeft ? "md:justify-start" : "md:justify-end"
+                }`}
+              >
+                {/* Connector Dot */}
+                <div className="absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-4 border-[#0d0d10] shadow-lg" />
 
-              {/* Center Laser beam */}
-              <div className="relative order-2 h-[70vh] min-h-[520px] flex items-end justify-center">
-                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-pink-300/50 to-transparent pointer-events-none" />
-                <div className="relative w-full max-w-[220px] h-full pointer-events-none">
-                  <LaserFlow
-                    className="w-full h-full"
-                    style={{ height: "100%" }}
-                    horizontalBeamOffset={0}
-                    verticalBeamOffset={0}
-                    wispDensity={1.6}
-                    fogIntensity={0.6}
-                    fogScale={0.28}
-                    color="#FF79C6"
-                  />
+                {/* Event Card */}
+                <div
+                  className={`w-full md:w-[45%]  bg-[#1a0e1eb0] border border-[#2c2c38] rounded-2xl p-4 text-center font-semibold text-lg hover:bg-[#20202a] transition-all duration-300 backdrop-blur-sm shadow-lg
+                    ${
+                      isLeft
+                        ? "md:mr-auto md:translate-x-[-8%] "
+                        : "md:ml-auto md:translate-x-[8%] "
+                    }`}
+                >
+                  {event}
                 </div>
-              </div>
-
-              {/* Right column */}
-              <ul className="space-y-4 order-3">
-                {rightEvents.map((it, idx) => (
-                  <motion.li
-                    key={`R-${it.event}-${idx}`}
-                    initial={{ opacity: 0, x: 12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: idx * 0.03 }}
-                    viewport={{ once: true }}
-                  >
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/8 backdrop-blur-md">
-                      <h4 className="text-lg font-semibold text-white/95">{it.event}</h4>
-                    </div>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+              </motion.li>
+            );
+          })}
+        </ul>
       </main>
+
+      {/* 🪶 Small padding bottom for spacing */}
+      <div className="pb-5" />
     </div>
   );
 }

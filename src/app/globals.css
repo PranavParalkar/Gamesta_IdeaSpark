@@ -236,3 +236,23 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+
+
+@keyframes glowLeft {
+  0%, 100% { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
+  50% { text-shadow: 0 0 20px #00f6ff, 0 0 40px #00f6ff; }
+}
+
+@keyframes glowRight {
+  0%, 100% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+  50% { text-shadow: 0 0 20px #ff55ff, 0 0 40px #ff55ff; }
+}
+
+.glow-left {
+  animation: glowLeft 2s infinite alternate;
+}
+
+.glow-right {
+  animation: glowRight 2s infinite alternate;
+}
