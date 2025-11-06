@@ -338,7 +338,7 @@ export default function IdeasPageWithTimeline() {
                     {sortedIdeas.map((idea: any, index: number) => (
                       <motion.div
                         key={idea.id}
-                        ref={(el) => (ideaRefs.current[idea.id] = el)}
+                        ref={(el) => { ideaRefs.current[idea.id] = el; }}
                         initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: index * 0.02 }}
