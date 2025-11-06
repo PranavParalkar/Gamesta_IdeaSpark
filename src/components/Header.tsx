@@ -28,6 +28,7 @@ export default function Header() {
   const navItems = [
     { name: "Voting", href: "/ideas" },
     { name: "Idea", href: "/submit" },
+    { name: "Events", href: "/events" },
     { name: "Leaderboard", href: "/leaderboard" },
   ];
 

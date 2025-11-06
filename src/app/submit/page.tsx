@@ -75,10 +75,10 @@ export default function SubmitPage() {
         style={{ opacity: glowOpacity }}
       >
         <PrismaticBurst
-          intensity={0.5}
+          intensity={0.6}
           speed={0.8}
           animationType="rotate3d"
-          colors={["#ff5ec8", "#7a5cff", "#00f6ff", "#fff"]}
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
           mixBlendMode="screen"
         />
       </motion.div>

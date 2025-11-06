@@ -84,10 +84,10 @@ export default function LoginPage() {
       {/* Animated background */}
       <div className="absolute inset-0 z-0">
         <PrismaticBurst
-          intensity={0.5}
-          speed={0.6}
+          intensity={0.6}
+          speed={0.8}
           animationType="rotate3d"
-          colors={["#7a5cff", "#00f6ff", "#ff5ec8"]}
+          colors={["#ff5ec8", "#7a5cff", "#00f6ff"]}
           mixBlendMode="screen"
         />
       </div>
