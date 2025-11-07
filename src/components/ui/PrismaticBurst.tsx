@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, CSSProperties } from 'react';
 import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl';
 
 const vertexShader = `#version 300 es
@@ -203,6 +203,8 @@ const toPx = (v: string | number | null | undefined) => {
 };
 
 type PrismaticBurstProps = {
+  className?: string;
+  style?: CSSProperties;
   intensity?: number;
   speed?: number;
   animationType?: 'rotate' | 'rotate3d' | 'hover' | string;
@@ -216,6 +218,8 @@ type PrismaticBurstProps = {
 };
 
 const PrismaticBurst = ({
+  className,
+  style,
   intensity = 2,
   speed = 0.5,
   animationType = 'rotate3d',
@@ -515,7 +519,7 @@ const PrismaticBurst = ({
     program.uniforms.uColorCount.value = count;
   }, [intensity, speed, animationType, colors, distort, offset, rayCount]);
 
-  return <div className="w-full h-full relative overflow-hidden" ref={containerRef} />;
+  return <div className={`w-full h-full relative overflow-hidden ${className || ''}`} style={style} ref={containerRef} />;
 };
 
 export default PrismaticBurst;
