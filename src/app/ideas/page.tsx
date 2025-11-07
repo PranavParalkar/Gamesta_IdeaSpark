@@ -108,19 +108,7 @@ export default function IdeasPageWithTimeline() {
 
   return (
     <div className="min-h-screen  relative">
-     {/* 🌌 Animated Background */}
-      <motion.div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#18003c,_#060014_70%)]"
-        animate={{
-          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-        }}
-        transition={{
-          duration: 40,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{ backgroundSize: "400% 400%" }}
-      />
+     
 
       {/* 🌈 Fixed Prismatic Burst Background */}
 <div
