@@ -94,6 +94,9 @@ export default function LeaderboardPage() {
                 <div className="text-xs md:text-lg font-semibold mt-2 truncate px-1">
                   {top3[1].title}
                 </div>
+                <div className="text-purple-400 font-bold my-1 text-sm md:text-xs">
+                  {top3[1].author_name ?? 0} 
+                </div>
                 <div className="text-purple-400 font-bold mt-1 text-sm md:text-base">
                   {top3[1].score ?? 0} pts
                 </div>
@@ -124,6 +127,9 @@ export default function LeaderboardPage() {
                 <div className="text-xs md:text-lg font-semibold mt-2 truncate  px-1">
                   {top3[0].title}
                 </div>
+                <div className="text-purple-400 font-bold my-1 text-sm md:text-xs">
+                  {top3[0].author_name ?? 0} 
+                </div>
                 <div className="text-yellow-400 font-bold mt-1 text-sm md:text-base">
                   {top3[0].score ?? 0} pts
                 </div>
@@ -153,6 +159,9 @@ export default function LeaderboardPage() {
                 </motion.div>
                 <div className="text-xs md:text-lg font-semibold mt-2 truncate px-1">
                   {top3[2].title}
+                </div>
+                <div className="text-purple-400 font-bold my-1 text-sm md:text-xs">
+                  {top3[2].author_name ?? 0} 
                 </div>
                 <div className="text-pink-400 font-bold mt-1 text-sm md:text-base">
                   {top3[2].score ?? 0} pts
