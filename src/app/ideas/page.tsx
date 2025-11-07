@@ -122,15 +122,19 @@ export default function IdeasPageWithTimeline() {
         style={{ backgroundSize: "400% 400%" }}
       />
 
-      {/* 🌈 Energy Overlay */}
-      <div className="absolute inset-0 mix-blend-screen opacity-70 z-0">
-        <PrismaticBurst
-          intensity={0.6}
-          speed={0.6}
-          animationType="rotate3d"
-          colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
-        />
-      </div>
+      {/* 🌈 Fixed Prismatic Burst Background */}
+<div
+  className="fixed inset-0 pointer-events-none mix-blend-screen opacity-70 z-[1]"
+  style={{ overflow: "hidden" }}
+>
+  <PrismaticBurst
+    intensity={0.6}
+    speed={0.6}
+    animationType="rotate3d"
+    colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
+/>
+</div>
+
 
 
       
