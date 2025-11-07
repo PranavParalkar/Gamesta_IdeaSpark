@@ -81,7 +81,7 @@ export default function LeaderboardPage() {
             >
               <div className="w-24 h-36 md:w-36 md:h-44 rounded-3xl bg-gradient-to-b from-purple-700 to-pink-800 backdrop-blur-xl p-2 border border-white/10 flex flex-col justify-between relative shadow-[0_0_30px_rgba(160,100,255,0.2)]">
                 <motion.div
-                  className="mx-auto md:-translate-y-3 text-5xl md:text-5xl text-purple-300 drop-shadow-[0_0_15px_rgba(160,100,255,0.5)]"
+                  className="mx-auto md:-translate-y-0 text-5xl md:text-5xl text-purple-300 drop-shadow-[0_0_15px_rgba(160,100,255,0.5)]"
                   animate={{ y: [0, -5, 0] }}
                   transition={{
                     duration: 2,
@@ -91,7 +91,7 @@ export default function LeaderboardPage() {
                 >
                   🥈
                 </motion.div>
-                <div className="text-xs md:text-lg font-semibold mt-2  px-1">
+                <div className="text-xs md:text-lg font-semibold mt-2 truncate px-1">
                   {top3[1].title}
                 </div>
                 <div className="text-purple-400 font-bold mt-1 text-sm md:text-base">
@@ -111,7 +111,7 @@ export default function LeaderboardPage() {
             >
               <div className="w-24 h-36 md:w-40 md:h-56 rounded-3xl bg-gradient-to-b from-purple-900 to-pink-700 backdrop-blur-xl p-1 border border-white/10 flex flex-col justify-between relative shadow-[0_0_40px_rgba(255,220,130,0.25)]">
                 <motion.div
-                  className="mx-auto md:-translate-y-3 mt-2 text-5xl md:text-7xl text-yellow-300 drop-shadow-[0_0_25px_rgba(255,230,120,0.6)]"
+                  className="mx-auto md:-translate-y-0 mt-2 text-5xl md:text-7xl text-yellow-300 drop-shadow-[0_0_25px_rgba(255,230,120,0.6)]"
                   animate={{ scale: [1, 1.1, 1], y: [0, -6, 0] }}
                   transition={{
                     duration: 2,
@@ -121,7 +121,7 @@ export default function LeaderboardPage() {
                 >
                   🥇
                 </motion.div>
-                <div className="text-xs md:text-lg font-semibold mt-2  px-1">
+                <div className="text-xs md:text-lg font-semibold mt-2 truncate  px-1">
                   {top3[0].title}
                 </div>
                 <div className="text-yellow-400 font-bold mt-1 text-sm md:text-base">
@@ -141,7 +141,7 @@ export default function LeaderboardPage() {
             >
               <div className="w-24 h-36 md:w-36 md:h-44 rounded-3xl bg-gradient-to-b from-purple-700 to-pink-700 backdrop-blur-xl p-2 border border-white/10 flex flex-col justify-between relative shadow-[0_0_30px_rgba(255,120,200,0.2)]">
                 <motion.div
-                  className="mx-auto top-0 md:-translate-y-3 text-5xl md:text-5xl text-pink-300 drop-shadow-[0_0_15px_rgba(255,120,200,0.5)]"
+                  className="mx-auto top-0 md:-translate-y-0 text-5xl md:text-5xl text-pink-300 drop-shadow-[0_0_15px_rgba(255,120,200,0.5)]"
                   animate={{ y: [0, -5, 0] }}
                   transition={{
                     duration: 2,
@@ -151,7 +151,7 @@ export default function LeaderboardPage() {
                 >
                   🥉
                 </motion.div>
-                <div className="text-xs md:text-lg font-semibold mt-2  px-1">
+                <div className="text-xs md:text-lg font-semibold mt-2 truncate px-1">
                   {top3[2].title}
                 </div>
                 <div className="text-pink-400 font-bold mt-1 text-sm md:text-base">

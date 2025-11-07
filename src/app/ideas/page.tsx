@@ -41,48 +41,76 @@ export default function IdeasPageWithTimeline() {
   const [showTimeline, setShowTimeline] = useState(false);
   const [selectedDay, setSelectedDay] = useState(new Date());
 
-  // Refs to scroll to idea cards
-  const ideaRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  // refs for scrolling to idea cards
+  const ideaRefs = useRef<Record<number, HTMLElement | null>>({});
 
-  async function vote(id: number) {
-    const token =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("gamesta_token")
-        : null;
-    if (!token) {
-      toast.error("Please sign in to vote");
-      return;
-    }
+  // track which idea ids the current user has voted for (client-side set)
+  const [votedIds, setVotedIds] = useState<Set<number>>(new Set());
 
-    setAnimating((s) => ({ ...s, [id]: true }));
-    toast.success("Voted ✔️");
+async function toggleVote(id: number) {
+  const token = typeof window !== "undefined"
+    ? sessionStorage.getItem("gamesta_token")
+    : null;
 
-    try {
-      const res = await fetch(`/api/ideas/${id}/vote`, {
-        method: "POST",
-        body: JSON.stringify({ ideaId: id, vote: 1 }),
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (!res.ok) throw new Error("Vote failed");
-      mutate();
-    } catch {
-      toast.error("Vote failed. Try again.");
-    } finally {
-      setTimeout(() => {
-        setAnimating((s) => {
-          const copy = { ...s };
-          delete copy[id];
-          return copy;
-        });
-      }, 700);
-    }
+  if (!token) {
+    toast.error("Please sign in to vote");
+    return;
   }
 
+  // ✅ determine future state BEFORE async
+  const alreadyVoted = votedIds.has(id);
+
+  // ✅ immediately update UI — no flicker
+  setVotedIds((prev) => {
+    const next = new Set(prev);
+    alreadyVoted ? next.delete(id) : next.add(id);
+    return next;
+  });
+
+  setAnimating((s) => ({ ...s, [id]: true }));
+
+  try {
+    await fetch(`/api/ideas/${id}/vote`, {
+      method: "POST",
+      body: JSON.stringify({ ideaId: id, vote: alreadyVoted ? -1 : 1 }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    toast.success(alreadyVoted ? "Vote removed ❌" : "Voted ✅");
+
+    // ✅ revalidate data *after* UI is already stable
+    mutate(undefined, { revalidate: true });
+  } catch {
+    toast.error("Could not update vote.");
+
+    // ❗ rollback optimistic update on failure
+    setVotedIds((prev) => {
+      const next = new Set(prev);
+      alreadyVoted ? next.add(id) : next.delete(id);
+      return next;
+    });
+  } finally {
+    setAnimating((s) => ({ ...s, [id]: false }));
+  }
+}
+
+
+
+  // initialize votedIds if server provides user-vote flags on ideas
+  useEffect(() => {
+    if (!ideasData?.data) return;
+    const s = new Set<number>();
+    ideasData.data.forEach((it: any) => {
+      if (it.userVoted || it.voted_by_user || it.myVote || it.voted) s.add(it.id);
+    });
+    setVotedIds(s);
+  }, [ideasData]);
+
   const sortedIdeas =
-    ideasData?.data?.sort((a: any, b: any) =>
+    ideasData?.data?.slice().sort((a: any, b: any) =>
       sort === "popular" ? b.score - a.score : b.id - a.id
     ) || [];
 
@@ -91,48 +119,43 @@ export default function IdeasPageWithTimeline() {
     const element = ideaRefs.current[id];
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
-      // tiny pulse animation could be added here
-      element.animate(
-        [
-          { boxShadow: "0 0 0px rgba(124,58,237,0)" },
-          { boxShadow: "0 8px 30px rgba(124,58,237,0.18)" },
-          { boxShadow: "0 0 0px rgba(124,58,237,0)" },
-        ],
-        { duration: 700 }
-      );
+      // tiny pulse animation
+      try {
+        element.animate(
+          [
+            { boxShadow: "0 0 0px rgba(124,58,237,0)" },
+            { boxShadow: "0 8px 30px rgba(124,58,237,0.18)" },
+            { boxShadow: "0 0 0px rgba(124,58,237,0)" },
+          ],
+          { duration: 700 }
+        );
+      } catch {
+        /* ignore if animate not supported */
+      }
     }
   };
 
-  // keep a simple effect placeholder (no timeline in this page)
-  useEffect(() => {}, []);
-
   return (
-    <div className="min-h-screen  relative">
-     
-
+    <div className="min-h-screen relative">
       {/* 🌈 Fixed Prismatic Burst Background */}
-<div
-  className="fixed inset-0 pointer-events-none mix-blend-screen opacity-70 z-[1]"
-  style={{ overflow: "hidden" }}
->
-  <PrismaticBurst
-    intensity={0.6}
-    speed={0.6}
-    animationType="rotate3d"
-    colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
-/>
-</div>
-
-
-
-      
+      <div
+        className="fixed inset-0 pointer-events-none mix-blend-screen opacity-70 z-0"
+        style={{ overflow: "hidden" }}
+      >
+        <PrismaticBurst
+          intensity={0.6}
+          speed={0.6}
+          animationType="rotate3d"
+          colors={["#ff5ec8", "#8f5bff", "#00f6ff"]}
+        />
+      </div>
 
       {/* Main Layout Container */}
-      <div className="absolute z-10 mt-12 flex min-h-[calc(100vh-80px)]">
+      <div className="absolute z-10 mt-12 flex min-h-[calc(100vh-80px)] w-full">
         {/* 🧭 Left Ranking Sidebar */}
         {sortedIdeas.length > 0 && (
           <aside className="hidden md:flex flex-col items-center sticky top-24 h-[calc(100vh-6rem)] pt-24 pl-6 w-24">
-            <div className="absolute top-0  w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-transparent h-full rounded-full" />
+            <div className="absolute top-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-transparent h-full rounded-full" />
             <div className="flex flex-col gap-6 relative z-10">
               {sortedIdeas.map((idea: any, index: number) => (
                 <motion.button
@@ -161,16 +184,16 @@ export default function IdeasPageWithTimeline() {
               <div />
             </div>
 
-            <div className={`grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {/* Ideas Grid - Spans all columns when timeline is hidden */}
-              <div className={'md:col-span-2 lg:col-span-3'}>
+              <div className="md:col-span-2 lg:col-span-3">
                 {!ideasData ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
                     {Array.from({ length: 6 }).map((_, i) => (
                       <div
                         key={i}
                         className="h-60 bg-white/10 rounded-2xl border border-white/10"
-                      ></div>
+                      />
                     ))}
                   </div>
                 ) : sortedIdeas.length === 0 ? (
@@ -180,7 +203,7 @@ export default function IdeasPageWithTimeline() {
                     <Button className="mt-4">Submit Idea</Button>
                   </div>
                 ) : (
-                  <div className={`columns-1 sm:columns-2 gap-6 space-y-6 lg:columns-3`}>
+                  <div className="columns-1 sm:columns-2 gap-6 space-y-6 lg:columns-3">
                     {sortedIdeas.map((idea: any, index: number) => (
                       <motion.div
                         key={idea.id}
@@ -190,7 +213,7 @@ export default function IdeasPageWithTimeline() {
                         transition={{ duration: 0.4, delay: index * 0.02 }}
                         viewport={{ once: true }}
                       >
-                        <Card className="relative mb-6 break-inside-avoid bg-white/10 border border-white/10 rounded-2xl backdrop-blur-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-transform hover:scale-[1.02] dur">
+                        <Card className="relative mb-6 break-inside-avoid bg-white/10 border border-white/10 rounded-2xl backdrop-blur-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-transform hover:scale-[1.02]">
                           <CardHeader>
                             <CardTitle className="text-xl text-white mb-2">
                               {idea.title}
@@ -206,15 +229,19 @@ export default function IdeasPageWithTimeline() {
                             </CardDescription>
 
                             <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => vote(idea.id)}
-                                className="flex items-center gap-2 text-sm px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-semibold shadow-lg hover:shadow-purple-500/25"
-                              >
-                                <BiUpArrowAlt className="w-4 h-4" />
-                                Upvote
-                              </motion.button>
+                             <motion.button
+  onClick={() => toggleVote(idea.id)}
+  disabled={animating[idea.id] || votedIds.has(idea.id)}
+  className={`flex items-center gap-2 text-sm px-4 py-2 rounded-full
+    ${votedIds.has(idea.id)
+      ? "bg-green-500 cursor-not-allowed"
+      : "bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105"
+    }`}
+>
+  {votedIds.has(idea.id) ? "Voted" : "Upvote"}
+</motion.button>
+
+
                               <span className="text-xs text-gray-400">#{index + 1}</span>
                             </div>
                           </CardContent>

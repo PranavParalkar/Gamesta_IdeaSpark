@@ -20,7 +20,7 @@ export default function ProfilePage() {
       </div>
 
 
-      <main className="container mx-auto px-4 py-16 relative z-10">
+      <main className="container mx-auto px-4 py-32 relative z-10">
         {/* Animated Greeting Section */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}

@@ -83,7 +83,7 @@ export default function LoginPage() {
     <div className="relative min-h-screen w-full">
       {/* Fixed Background */}
       <div className="fixed inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#121212] via-[#1e003e] to-[#003366]" />
+        <div className="absolute inset-0 " />
         <div className="absolute inset-0">
           <PrismaticBurst
             intensity={0.6}
