@@ -7,7 +7,7 @@ import { getSessionFromHeader } from '../../../lib/auth';
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const page = Number(url.searchParams.get('page') || '1');
-  let perPage = Number(url.searchParams.get('perPage') || '10');
+  let perPage = Number(url.searchParams.get('perPage') || '100');
   if (!Number.isFinite(perPage) || perPage <= 0) perPage = 10;
   perPage = Math.min(50, Math.floor(perPage));
   let offset = (page - 1) * perPage;
