@@ -72,7 +72,8 @@ async function toggleVote(id: number) {
   try {
     await fetch(`/api/ideas/${id}/vote`, {
       method: "POST",
-      body: JSON.stringify({ ideaId: id, vote: alreadyVoted ? -1 : 1 }),
+      // API toggles based on existing vote; it requires vote = 1
+      body: JSON.stringify({ ideaId: id, vote: 1 }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -104,7 +105,10 @@ async function toggleVote(id: number) {
     if (!ideasData?.data) return;
     const s = new Set<number>();
     ideasData.data.forEach((it: any) => {
-      if (it.userVoted || it.voted_by_user || it.myVote || it.voted) s.add(it.id);
+      // Support multiple possible API flags; primary is voted_by_you (0/1)
+      if (it.voted_by_you || it.userVoted || it.voted_by_user || it.myVote || it.voted) {
+        s.add(it.id);
+      }
     });
     setVotedIds(s);
   }, [ideasData]);
