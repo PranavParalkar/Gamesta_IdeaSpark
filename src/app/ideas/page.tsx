@@ -190,17 +190,28 @@ async function toggleVote(id: number) {
 
       {/* Main Layout Container */}
       <div className="absolute z-10 mt-12 flex min-h-[calc(100vh-80px)] w-full">
-        {/* 🧭 Left Ranking Sidebar */}
+          {/* 🧭 Left Ranking Sidebar */}
         {sortedIdeas.length > 0 && (
-          <aside className="hidden md:flex flex-col items-center sticky top-24 h-[calc(100vh-6rem)] pt-24 pl-6 w-24">
-            <div className="absolute top-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-transparent h-full rounded-full" />
-            <div className="flex flex-col gap-6 relative z-10">
+          <aside
+            role="navigation"
+            aria-label="Idea rankings"
+            className="hidden fixed md:flex flex-col items-center pt-5  h-[calc(120vh-6rem)]  pl-4 w-24"
+          >
+            {/* vertical accent line */}
+            <div className="absolute top-0 left-12 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-transparent h-full rounded-full" />
+
+            {/* scrollable list */}
+            <div
+              className="relative z-10 w-full max-h-[calc(120vh-12rem)] overflow-y-auto py-4 pr-2 flex flex-col items-center gap-4 no-scrollbar"
+              // optional nice scrollbar if Tailwind scrollbar plugin is available
+            >
               {sortedIdeas.map((idea: any, index: number) => (
                 <motion.button
                   key={idea.id}
-                  whileHover={{ scale: 1.2 }}
+                  whileHover={{ scale: 1.12 }}
                   onClick={() => scrollToIdea(idea.id)}
-                  className="relative w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold rounded-full flex items-center justify-center shadow-lg hover:shadow-pink-400/30 transition"
+                  className="relative flex-none w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold rounded-full flex items-center justify-center shadow-lg hover:shadow-pink-400/30 transition focus:outline-none focus:ring-4 focus:ring-pink-300/30"
+                  aria-label={`Scroll to idea ${index + 1}`}
                 >
                   #{index + 1}
                 </motion.button>
@@ -209,8 +220,9 @@ async function toggleVote(id: number) {
           </aside>
         )}
 
+
         {/* 🌟 Main Content */}
-        <main className={`flex-1 px-6 py-12 ${showTimeline ? "lg:ml-[20rem]" : ""}`}>
+        <main className={`flex-1 px-6 pl-28 py-12 ${showTimeline ? "lg:ml-[20rem]" : ""}`}>
           <div className="max-w-8xl mx-auto">
             <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between">
               <div>
