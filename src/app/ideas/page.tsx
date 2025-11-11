@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 import { Button } from "../../components/ui/Button";
@@ -37,7 +36,6 @@ const fetcher = (url: string) => {
 // -----------------------------
 export default function IdeasPageWithTimeline() {
   const { data: ideasData, mutate } = useSWR("/api/ideas", fetcher);
-  const searchParams = useSearchParams();
   const [animating, setAnimating] = useState<Record<number, boolean>>({});
   const [sort, setSort] = useState<"recent" | "popular">("popular");
   const [showTimeline, setShowTimeline] = useState(false);
@@ -157,20 +155,23 @@ async function toggleVote(id: number) {
 
   // When navigated from leaderboard with ?focus=<id> or #idea-<id>, scroll to that idea once data is loaded
   useEffect(() => {
-    const focusParam = searchParams?.get("focus");
     let targetId: number | null = null;
-    if (focusParam && /^\d+$/.test(focusParam)) targetId = Number(focusParam);
-    if (!targetId && typeof window !== "undefined") {
-      const hash = window.location.hash || "";
-      const m = hash.match(/#idea-(\d+)/);
-      if (m) targetId = Number(m[1]);
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const focusParam = sp.get("focus");
+      if (focusParam && /^\d+$/.test(focusParam)) targetId = Number(focusParam);
+      if (!targetId) {
+        const hash = window.location.hash || "";
+        const m = hash.match(/#idea-(\d+)/);
+        if (m) targetId = Number(m[1]);
+      }
     }
     if (targetId && ideasData?.data?.length) {
       // delay slightly to ensure refs are set after render
       const t = setTimeout(() => scrollToIdea(targetId as number), 60);
       return () => clearTimeout(t);
     }
-  }, [ideasData, searchParams]);
+  }, [ideasData]);
 
   return (
     <div className="min-h-screen relative">

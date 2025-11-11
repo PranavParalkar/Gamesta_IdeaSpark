@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
@@ -15,6 +16,9 @@ import {
 import { Input } from "../../components/ui/Input";
 import { Textarea } from "../../components/ui/Input";
 import toast from "react-hot-toast";
+import CountUp from "./CountUp";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function SubmitPage() {
   const [title, setTitle] = useState("");
@@ -23,6 +27,7 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { data: statsData } = useSWR("/api/stats", fetcher);
 
   async function submit(e: any) {
     e.preventDefault();
@@ -272,35 +277,27 @@ export default function SubmitPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <Card className="bg-white/5 border border-white/10 backdrop-blur-md shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-base sm:text-lg text-fuchsia-400 flex items-center space-x-2">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  />
-                </svg>
-                <span>Tips for a Great Idea</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
-                <li>• Be specific and detailed in your description</li>
-                <li>• Explain how your idea would work in practice</li>
-                <li>• Highlight what makes your idea unique or innovative</li>
-                <li>• Consider the feasibility and resources needed</li>
-                <li>• Think about the impact on the college community</li>
-              </ul>
-            </CardContent>
-          </Card>
+          {/* Stats strip with CountUp effects */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="rounded-2xl bg-white/10 border border-white/10 p-6 text-center backdrop-blur-xl">
+              <div className="text-xs uppercase tracking-wide text-white/60">Users</div>
+              <div className="mt-2 text-3xl font-extrabold text-white">
+                <CountUp to={Number(statsData?.data?.users || 0)} duration={1.2} separator="," className="count-up-text" />
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white/10 border border-white/10 p-6 text-center backdrop-blur-xl">
+              <div className="text-xs uppercase tracking-wide text-white/60">Ideas</div>
+              <div className="mt-2 text-3xl font-extrabold text-white">
+                <CountUp to={Number(statsData?.data?.ideas || 0)} duration={1.2} separator="," className="count-up-text" />
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white/10 border border-white/10 p-6 text-center backdrop-blur-xl">
+              <div className="text-xs uppercase tracking-wide text-white/60">Votes</div>
+              <div className="mt-2 text-3xl font-extrabold text-white">
+                <CountUp to={Number(statsData?.data?.upvotes ?? statsData?.data?.votes ?? 0)} duration={1.2} separator="," className="count-up-text" />
+              </div>
+            </div>
+          </div>
         </motion.div>
       </motion.main>
     </div>
