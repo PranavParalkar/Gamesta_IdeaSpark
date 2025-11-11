@@ -1,11 +1,35 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
 import ProfileList from "../../components/ProfileList";
 import { motion } from "framer-motion";
 
 export default function ProfilePage() {
+  const [userName, setUserName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? sessionStorage.getItem("gamesta_token") : null;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    (async () => {
+      try {
+        const res = await fetch(`/api/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("profile fetch failed");
+        const json = await res.json();
+        setUserName(json?.user?.name || null);
+      } catch {
+        setUserName(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
   return (
     <div className="min-h-screen bg-[#05010F] relative overflow-hidden">
       {/* Animated Gradient Background */}
@@ -29,7 +53,7 @@ export default function ProfilePage() {
           className="text-center mb-16"
         >
           <h1 className="text-5xl sm:text-6xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
-            Hello MIT'ian 👋
+            {loading ? "Hello 👋" : userName ? `Hello ${userName} 👋` : "Hello 👋"}
           </h1>
           <p className="mt-4 text-lg text-white/70 max-w-2xl mx-auto">
             Welcome to your creative universe — here are your ideas, glowing with innovation and ambition.
