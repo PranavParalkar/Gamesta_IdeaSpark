@@ -70,23 +70,37 @@ async function toggleVote(id: number) {
   setAnimating((s) => ({ ...s, [id]: true }));
 
   try {
-    await fetch(`/api/ideas/${id}/vote`, {
+    const res = await fetch(`/api/ideas/${id}/vote`, {
       method: "POST",
-      // API toggles based on existing vote; it requires vote = 1
       body: JSON.stringify({ ideaId: id, vote: 1 }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
-
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error || "Vote failed");
     toast.success(alreadyVoted ? "Vote removed ❌" : "Voted ✅");
 
-    // ✅ revalidate data *after* UI is already stable
-    mutate(undefined, { revalidate: true });
-  } catch {
+    // 🔄 Update score locally without full list refetch
+    if (json?.stats) {
+      mutate(
+        (current: any) => {
+          if (!current?.data) return current;
+          return {
+            ...current,
+            data: current.data.map((idea: any) =>
+              idea.id === id
+                ? { ...idea, score: json.stats.score }
+                : idea
+            ),
+          };
+        },
+        { revalidate: false }
+      );
+    }
+  } catch (e) {
     toast.error("Could not update vote.");
-
     // ❗ rollback optimistic update on failure
     setVotedIds((prev) => {
       const next = new Set(prev);
