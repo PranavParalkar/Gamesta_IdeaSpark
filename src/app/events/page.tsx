@@ -15,11 +15,11 @@ const timelineData = [
   "Ramp Walk",
   "GSQ (Google Squid Games)",
   "Drone Simulator Competition",
-  "AeroCAD Demonstrations",
+  "AeroCAD Face-Off",
   "Poster Design Competition",
   "Mobile Robocar Racing",
   "Strongest on Campus",
-  "Valorant Tournament – Finals",
+  "Valorant Tournament",
 ];
 
 export default function EventsPage() {
@@ -49,8 +49,13 @@ export default function EventsPage() {
         />
       </div>
 
-
       <main className="max-w-5xl mt-24 mx-auto px-6  relative">
+        {/* Page Heading */}
+        <div className="relative z-10 text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
+            Events in Gamesta
+          </h1>
+        </div>
         {/* Center Timeline Line */}
         <div className="absolute left-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-pink-500 rounded-full opacity-70 z-0" />
 
