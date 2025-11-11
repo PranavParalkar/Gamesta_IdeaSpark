@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 import { Button } from "../../components/ui/Button";
@@ -36,6 +37,7 @@ const fetcher = (url: string) => {
 // -----------------------------
 export default function IdeasPageWithTimeline() {
   const { data: ideasData, mutate } = useSWR("/api/ideas", fetcher);
+  const searchParams = useSearchParams();
   const [animating, setAnimating] = useState<Record<number, boolean>>({});
   const [sort, setSort] = useState<"recent" | "popular">("popular");
   const [showTimeline, setShowTimeline] = useState(false);
@@ -153,6 +155,23 @@ async function toggleVote(id: number) {
     }
   };
 
+  // When navigated from leaderboard with ?focus=<id> or #idea-<id>, scroll to that idea once data is loaded
+  useEffect(() => {
+    const focusParam = searchParams?.get("focus");
+    let targetId: number | null = null;
+    if (focusParam && /^\d+$/.test(focusParam)) targetId = Number(focusParam);
+    if (!targetId && typeof window !== "undefined") {
+      const hash = window.location.hash || "";
+      const m = hash.match(/#idea-(\d+)/);
+      if (m) targetId = Number(m[1]);
+    }
+    if (targetId && ideasData?.data?.length) {
+      // delay slightly to ensure refs are set after render
+      const t = setTimeout(() => scrollToIdea(targetId as number), 60);
+      return () => clearTimeout(t);
+    }
+  }, [ideasData, searchParams]);
+
   return (
     <div className="min-h-screen relative">
       {/* 🌈 Fixed Prismatic Burst Background */}
@@ -231,7 +250,7 @@ async function toggleVote(id: number) {
                         transition={{ duration: 0.4, delay: index * 0.02 }}
                         viewport={{ once: true }}
                       >
-                        <Card className="relative mb-6 break-inside-avoid bg-white/10 border border-white/10 rounded-2xl backdrop-blur-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-transform hover:scale-[1.02]">
+                        <Card id={`idea-${idea.id}`} className="relative mb-6 break-inside-avoid bg-white/10 border border-white/10 rounded-2xl backdrop-blur-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-transform hover:scale-[1.02]">
                           <CardHeader>
                             <CardTitle className="text-xl text-white mb-2">
                               {idea.title}

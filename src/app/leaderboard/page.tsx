@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import Header from "../../components/Header";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
@@ -39,6 +40,7 @@ export default function LeaderboardPage() {
   const leaderboard = data?.data || [];
   const top3 = leaderboard.slice(0, 3);
   const others = leaderboard.slice(3);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-[#050015] text-white relative overflow-hidden">
@@ -71,13 +73,14 @@ export default function LeaderboardPage() {
       {/* 🏆 Podium Section */}
       <section className="pt-20 mt-12 text-center relative z-10">
         <div className="flex flex-row md:flex-row justify-center items-end md:items-end gap-3 md:gap-10 mb-20 px-6">
-          {/* 2nd Place */}
+          {/* 2nd Place (click to open in Voting) */}
           {top3[1] && (
             <motion.div
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-col items-end order-2 md:order-1"
+              className="flex flex-col items-end order-2 md:order-1 cursor-pointer"
+              onClick={() => router.push(`/ideas?focus=${top3[1].id}`)}
             >
               <div className="w-24 h-36 md:w-36 md:h-44 rounded-3xl bg-gradient-to-b from-purple-700 to-pink-800 backdrop-blur-xl p-2 border border-white/10 flex flex-col justify-between relative shadow-[0_0_30px_rgba(160,100,255,0.2)]">
                 <motion.div
@@ -104,13 +107,14 @@ export default function LeaderboardPage() {
             </motion.div>
           )}
 
-          {/* 1st Place */}
+          {/* 1st Place (click to open in Voting) */}
           {top3[0] && (
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-col items-center order-2 scale-125 md:order-2"
+              className="flex flex-col items-center order-2 scale-125 md:order-2 cursor-pointer"
+              onClick={() => router.push(`/ideas?focus=${top3[0].id}`)}
             >
               <div className="w-24 h-36 md:w-40 md:h-56 rounded-3xl bg-gradient-to-b from-purple-900 to-pink-700 backdrop-blur-xl p-1 border border-white/10 flex flex-col justify-between relative shadow-[0_0_40px_rgba(255,220,130,0.25)]">
                 <motion.div
@@ -137,13 +141,14 @@ export default function LeaderboardPage() {
             </motion.div>
           )}
 
-          {/* 3rd Place */}
+          {/* 3rd Place (click to open in Voting) */}
           {top3[2] && (
             <motion.div
               initial={{ y: 70, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-col items-center order-3"
+              className="flex flex-col items-center order-3 cursor-pointer"
+              onClick={() => router.push(`/ideas?focus=${top3[2].id}`)}
             >
               <div className="w-24 h-36 md:w-36 md:h-44 rounded-3xl bg-gradient-to-b from-purple-700 to-pink-700 backdrop-blur-xl p-2 border border-white/10 flex flex-col justify-between relative shadow-[0_0_30px_rgba(255,120,200,0.2)]">
                 <motion.div
@@ -190,7 +195,8 @@ export default function LeaderboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
                 whileHover={{ scale: 1.01 }}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 md:px-6 py-3 hover:bg-white/10 transition gap-2 sm:gap-0"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 md:px-6 py-3 hover:bg-white/10 transition gap-2 sm:gap-0 cursor-pointer"
+                onClick={() => router.push(`/ideas?focus=${user.id}`)}
               >
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className="text-white/60 font-semibold w-6 sm:w-8">
@@ -206,7 +212,7 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
                 </div>
-                <div className="text-cyan-300 font-bold text-sm md:text-lg sm:ml-auto">
+                <div className="text-cyan-300 font-bold text-sm md:text-lg sm:ml-auto select-none">
                   {user.score ?? 0} pts
                 </div>
               </motion.div>
