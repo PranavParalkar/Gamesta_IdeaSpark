@@ -11,7 +11,8 @@ async function ensureOwnership(ideaId: number, userId: number) {
   return { ok: true } as const;
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+// Using loose typing for the context to avoid Next.js route handler generic typing issues across versions
+export async function PATCH(req: NextRequest, { params }: any) {
   try {
     const session = await getSessionFromHeader(req as any);
     if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -36,7 +37,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// Using loose typing for the context to avoid Next.js route handler generic typing issues across versions
+export async function DELETE(req: NextRequest, { params }: any) {
   try {
     const session = await getSessionFromHeader(req as any);
     if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
