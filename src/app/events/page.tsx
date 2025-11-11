@@ -56,8 +56,7 @@ export default function EventsPage() {
             Events in Gamesta
           </h1>
         </div>
-        {/* Center Timeline Line */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-pink-500 rounded-full opacity-70 z-0" />
+  {/* Center Timeline Line removed per request */}
 
         {/* Timeline Items */}
         <ul className="relative z-10 space-y-5 md:space-y-0 mt-10">
