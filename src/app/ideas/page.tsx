@@ -222,7 +222,7 @@ async function toggleVote(id: number) {
 
 
         {/* 🌟 Main Content */}
-        <main className={`flex-1 px-6 pl-28 py-12 ${showTimeline ? "lg:ml-[20rem]" : ""}`}>
+        <main className={`flex-1 px-2 md:px-6 md:pl-28 py-12 ${showTimeline ? "lg:ml-[20rem]" : ""}`}>
           <div className="max-w-8xl mx-auto">
             <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between">
               <div>
