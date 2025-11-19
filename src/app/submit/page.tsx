@@ -85,17 +85,7 @@ export default function SubmitPage() {
     <div className="min-h-screen relative overflow-auto bg-[#050015] text-white">
       {/* 🌌 Background Layers */}
       <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
-        {/* Gradient Background */}
-        <div className="absolute inset-0 -z-10">
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              background:
-                "radial-gradient(circle at center, #18003c, #060014 70%)",
-            }}
-          />
-        </div>
+     
 
         {/* Prismatic Burst Animation */}
         <div

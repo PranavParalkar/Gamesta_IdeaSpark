@@ -237,7 +237,14 @@ body {
   background: var(--primary);
 }
 
-
+/* hide native scrollbar but keep scrolling functional */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 
 @keyframes glowLeft {
   0%, 100% { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }

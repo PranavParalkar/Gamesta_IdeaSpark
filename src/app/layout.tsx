@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { Toaster } from 'react-hot-toast';
 import Header from "@/components/Header";
+import Link from "next/link";
+import ContactFloating from "@/components/ContactFloating";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +55,9 @@ export default function RootLayout({
           <div className="">
             {children}
           </div>
+
+          {/* Floating contact button & modal (bottom-right) */}
+          <ContactFloating />
 
           <Toaster 
             position="top-center" 
