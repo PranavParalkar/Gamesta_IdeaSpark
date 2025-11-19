@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '../../../lib/db';
 import { getSessionFromHeader } from '../../../lib/auth';
+import { verifyCsrfToken } from '../../../lib/csrf';
+import { z } from 'zod';
 
 // Simple JSON body parser + validation using NextRequest.json()
 
@@ -79,13 +81,34 @@ export async function POST(req: NextRequest) {
   if (isRateLimited(ip)) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
 
   try {
+    // Enforce browser same-origin for CSRF hardening
+    const origin = req.headers.get('origin');
+    if (origin) {
+      const host = new URL(req.url).host;
+      try { const oh = new URL(origin).host; if (oh !== host) return NextResponse.json({ error: 'Forbidden' }, { status: 403 }); } catch {}
+    }
+
     const session = await getSessionFromHeader(req);
     if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
-    const body = await req.json().catch(() => ({}));
-    const title = (body.title || '').toString().trim();
-    const description = (body.description || '').toString().trim();
-  const followedInstagram = !!body.followedInstagram;
+    const bodyRaw = await req.json().catch(() => ({}));
+    const ideaSchema = z.object({
+      title: z.string().min(5).max(150),
+      description: z.string().min(10).max(500),
+      followedInstagram: z.boolean().optional()
+    });
+    const parsed = ideaSchema.safeParse(bodyRaw);
+    if (!parsed.success) return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
+    const body = parsed.data;
+    const presentedCsrf = (req.headers.get('x-csrf-token') || '').trim();
+    const csrfCookie = req.cookies.get('csrf_token')?.value || null;
+    if (!verifyCsrfToken(csrfCookie, presentedCsrf)) {
+      return NextResponse.json({ error: 'Invalid or missing CSRF token' }, { status: 403 });
+    }
+    const stripTags = (s: string) => s.replace(/<[^>]*>/g, '');
+    const title = stripTags(body.title).trim();
+    const description = stripTags(body.description).trim();
+    const followedInstagram = !!body.followedInstagram;
 
     if (!title || title.length < 5) return NextResponse.json({ error: 'Title too short' }, { status: 400 });
   if (!description || description.length < 10) return NextResponse.json({ error: 'Description too short' }, { status: 400 });

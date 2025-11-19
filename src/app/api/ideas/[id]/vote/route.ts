@@ -1,20 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '../../../../../lib/db';
 import { getSessionFromHeader } from '../../../../../lib/auth';
+import { getIP, rateLimit, assertSameOriginOrThrow } from '../../../../../lib/security';
+import { verifyCsrfToken } from '../../../../../lib/csrf';
+import { z } from 'zod';
 
 export async function POST(req: NextRequest, { params }: any) {
   try {
+    // Basic CSRF hardening for browser-originated requests
+    assertSameOriginOrThrow(req);
+
+    // Per-IP and per-user rate limits to deter automated mass voting
+    const ip = getIP(req);
+    const ipKey = `vote:ip:${ip}`;
+    const userKeyBase = `vote:user:`;
+
     const session = await getSessionFromHeader(req);
     if (!session) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    const userKey = `${userKeyBase}${session.user.id}`;
 
     // idea id from URL has priority over body
-    const body = await req.json().catch(() => ({}));
+    const raw = await req.json().catch(() => ({}));
+    const voteSchema = z.object({ vote: z.number().int().positive().max(1).default(1), ideaId: z.number().int().optional(), id: z.number().int().optional() });
+    const parsed = voteSchema.safeParse(raw);
+    if (!parsed.success) return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
+    const body = parsed.data;
+    const presentedCsrf = (req.headers.get('x-csrf-token') || '').trim();
+    const csrfCookie = req.cookies.get('csrf_token')?.value || null;
+    if (!verifyCsrfToken(csrfCookie, presentedCsrf)) {
+      return NextResponse.json({ error: 'Invalid or missing CSRF token' }, { status: 403 });
+    }
     const ideaId = Number(params?.id ?? body.ideaId ?? body.id ?? 0);
     const vote = Number(body.vote ?? 0);
 
     // Only upvotes (1) are supported. Downvotes are not allowed.
     if (!ideaId || vote !== 1) {
       return NextResponse.json({ error: 'Invalid payload: idea id and vote (1) required' }, { status: 400 });
+    }
+
+    // Lightweight rate limits
+    if (rateLimit(ipKey, 60, 60 * 1000)) {
+      return NextResponse.json({ error: 'Too many requests from this IP' }, { status: 429 });
+    }
+    if (rateLimit(userKey, 30, 60 * 1000)) {
+      return NextResponse.json({ error: 'Too many votes from this account' }, { status: 429 });
     }
 
     // Helper to get aggregated stats for the idea
@@ -51,9 +80,19 @@ export async function POST(req: NextRequest, { params }: any) {
     }
 
     // No existing vote, insert new upvote
-    const res = await query('INSERT INTO votes (idea_id, voter_user_id, vote) VALUES (?, ?, ?)', [ideaId, session.user.id, 1]);
-    const stats = await getIdeaStats(ideaId);
-    return NextResponse.json({ ok: true, inserted: true, id: (res as any).insertId, stats }, { status: 201 });
+    try {
+      const res = await query('INSERT INTO votes (idea_id, voter_user_id, vote) VALUES (?, ?, ?)', [ideaId, session.user.id, 1]);
+      const stats = await getIdeaStats(ideaId);
+      return NextResponse.json({ ok: true, inserted: true, id: (res as any).insertId, stats }, { status: 201 });
+    } catch (e: any) {
+      // Handle race conditions if a unique constraint exists on (idea_id, voter_user_id)
+      const msg = e && (e.code || e.message || '').toString();
+      if (msg.includes('ER_DUP_ENTRY')) {
+        const stats = await getIdeaStats(ideaId);
+        return NextResponse.json({ ok: true, inserted: false, duplicate: true, stats }, { status: 200 });
+      }
+      throw e;
+    }
   } catch (err: any) {
     // Better error info for debugging (don't leak sensitive info in production)
     console.error('Vote route error:', err && err.stack ? err.stack : err);
