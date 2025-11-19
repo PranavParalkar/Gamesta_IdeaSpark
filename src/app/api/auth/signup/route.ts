@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   // Year constraint: first 4 digits must be between 2022 and 2025 inclusive
   const prnYear = localPart.substring(0,4);
   if (!/^\d{4}$/.test(prnYear) || Number(prnYear) < 2022 || Number(prnYear) > 2025) {
-    return NextResponse.json({ error: 'PRN must start with a year between 2022 and 2025' }, { status: 400 });
+    return NextResponse.json({ error: 'PRN is not valid' }, { status: 400 });
   }
   if (!name || name.length < 2 || name.length > 100) return NextResponse.json({ error: 'Please provide your full name' }, { status: 400 });
   if (!password || password.length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
