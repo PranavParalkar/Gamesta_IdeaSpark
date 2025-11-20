@@ -55,14 +55,33 @@ export default function SubmitPage() {
     }
 
     setLoading(true);
+    // Extract CSRF raw token from cookie
+    function getCsrfRaw(): string | null {
+      if (typeof document === "undefined") return null;
+      const m = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+      if (!m) return null;
+      const full = decodeURIComponent(m[1]);
+      const parts = full.split(".");
+      if (parts.length !== 2) return null;
+      return parts[0];
+    }
+    const csrfRaw = getCsrfRaw();
+    if (!csrfRaw) {
+      setError("Missing CSRF token. Please re-login.");
+      toast.error("Missing CSRF token. Please re-login.");
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/ideas", {
         method: "POST",
         body: JSON.stringify({ title, description, followedInstagram }),
         headers: {
           "Content-Type": "application/json",
+          "x-csrf-token": csrfRaw,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
+        credentials: "include",
       });
 
       const body = await res.json().catch(() => ({}));

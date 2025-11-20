@@ -70,13 +70,36 @@ async function toggleVote(id: number) {
   setAnimating((s) => ({ ...s, [id]: true }));
 
   try {
+    function getCsrfRaw(): string | null {
+      if (typeof document === 'undefined') return null;
+      const m = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+      if (!m) return null;
+      const full = decodeURIComponent(m[1]);
+      const parts = full.split('.');
+      if (parts.length !== 2) return null;
+      return parts[0];
+    }
+    const csrfRaw = getCsrfRaw();
+    if (!csrfRaw) {
+      toast.error('Missing CSRF token. Please re-login.');
+      // rollback optimistic update immediately
+      setVotedIds((prev) => {
+        const next = new Set(prev);
+        alreadyVoted ? next.add(id) : next.delete(id);
+        return next;
+      });
+      setAnimating((s) => ({ ...s, [id]: false }));
+      return;
+    }
     const res = await fetch(`/api/ideas/${id}/vote`, {
       method: "POST",
       body: JSON.stringify({ ideaId: id, vote: 1 }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "x-csrf-token": csrfRaw,
       },
+      credentials: 'include',
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(json.error || "Vote failed");
