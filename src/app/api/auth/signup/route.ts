@@ -55,9 +55,10 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
     const csrfCookie = generateCsrfToken();
     const res = NextResponse.json({ token, userId, csrf: csrfCookie.split('.')[0] });
-    res.cookies.set('session', token, { httpOnly: true, sameSite: 'strict', secure: true, path: '/', maxAge: 60 * 60 * 24 * 7 });
+    const secureFlag = process.env.NODE_ENV === 'production';
+    res.cookies.set('session', token, { httpOnly: true, sameSite: 'strict', secure: secureFlag, path: '/', maxAge: 60 * 60 * 24 * 7 });
     // Non-HttpOnly so client JS can read and send header; value includes signature
-    res.cookies.set('csrf_token', csrfCookie, { httpOnly: false, sameSite: 'strict', secure: true, path: '/', maxAge: 60 * 60 * 24 });
+    res.cookies.set('csrf_token', csrfCookie, { httpOnly: false, sameSite: 'strict', secure: secureFlag, path: '/', maxAge: 60 * 60 * 24 });
     return res;
   } catch (e: any) {
     console.error('Signup error:', e && e.stack ? e.stack : e);

@@ -57,13 +57,23 @@ export default function SubmitPage() {
     setLoading(true);
     // Extract CSRF raw token from cookie
     function getCsrfRaw(): string | null {
-      if (typeof document === "undefined") return null;
-      const m = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
-      if (!m) return null;
-      const full = decodeURIComponent(m[1]);
-      const parts = full.split(".");
-      if (parts.length !== 2) return null;
-      return parts[0];
+      // Try cookie first
+      if (typeof document !== "undefined") {
+        const m = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+        if (m) {
+          try {
+            const full = decodeURIComponent(m[1]);
+            const parts = full.split('.');
+            if (parts.length === 2) return parts[0];
+          } catch {}
+        }
+      }
+      // Fallback to sessionStorage (set during signin/signup)
+      try {
+        const stored = typeof window !== 'undefined' ? sessionStorage.getItem('gamesta_csrf') : null;
+        if (stored) return stored;
+      } catch {}
+      return null;
     }
     const csrfRaw = getCsrfRaw();
     if (!csrfRaw) {

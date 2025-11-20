@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { getSession } from 'next-auth/react';
 import { query } from '../../../../lib/db';
+import { generateCsrfToken } from '../../../../lib/csrf';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
 
@@ -34,7 +35,12 @@ export async function GET(req: NextRequest) {
         userId = (rows as any[])[0].id;
       }
       const token = jwt.sign({ sub: String(userId), email }, JWT_SECRET, { expiresIn: '7d' });
-      return NextResponse.json({ token, userId });
+      const csrfCookie = generateCsrfToken();
+      const res = NextResponse.json({ token, userId, csrf: csrfCookie.split('.')[0] });
+      const secureFlag = process.env.NODE_ENV === 'production';
+      res.cookies.set('session', token, { httpOnly: true, sameSite: 'strict', secure: secureFlag, path: '/', maxAge: 60 * 60 * 24 * 7 });
+      res.cookies.set('csrf_token', csrfCookie, { httpOnly: false, sameSite: 'strict', secure: secureFlag, path: '/', maxAge: 60 * 60 * 24 });
+      return res;
     } catch (e: any) {
       console.error('OAuth token error:', e && e.stack ? e.stack : e);
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

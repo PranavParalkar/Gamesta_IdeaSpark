@@ -63,11 +63,13 @@ export default function LoginPage() {
       const res = await fetch(endpoint, { 
         method: 'POST', 
         body: JSON.stringify({ email, password, name: name || email.split('@')[0] }), 
-        headers: { 'Content-Type': 'application/json' } 
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
       });
       if (res.ok) {
         const data = await res.json();
         sessionStorage.setItem('gamesta_token', data.token);
+        if (data?.csrf) sessionStorage.setItem('gamesta_csrf', data.csrf);
         router.push('/');
       } else {
         const json = await res.json().catch(() => null);
