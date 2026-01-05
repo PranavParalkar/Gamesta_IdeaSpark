@@ -25,10 +25,11 @@ export default function LoginPage() {
       if (oauth === '1') {
         (async () => {
           try {
-            const res = await fetch('/api/auth/oauth-token');
+            const res = await fetch('/api/auth/oauth-token', { credentials: 'include' });
             if (res.ok) {
               const json = await res.json();
-              sessionStorage.setItem('gamesta_token', json.token);
+              if (json?.token) sessionStorage.setItem('gamesta_token', json.token);
+              if (json?.csrf) sessionStorage.setItem('gamesta_csrf', json.csrf);
               router.push('/');
             }
           } catch (e) {
