@@ -14,10 +14,8 @@ export async function GET(req: NextRequest) {
     // Note: getSession won't work directly on the server using this import in app router.
     // Instead, NextAuth stores a session cookie; we rely on the session callback to set token info.
     // As a pragmatic approach, call NextAuth's session endpoint internally.
-    // Always use the current request origin to ensure cookies are scoped correctly,
-    // avoiding cross-origin session lookups when NEXTAUTH_URL points to production.
-    const currentOrigin = `${req.nextUrl.protocol}//${req.headers.get('host')}`;
-    const resp = await fetch(`${currentOrigin}/api/auth/session`, {
+    const base = process.env.NEXTAUTH_URL || `${req.nextUrl.protocol}//${req.headers.get('host')}`;
+    const resp = await fetch(`${base}/api/auth/session`, {
       headers: { cookie: req.headers.get('cookie') || '' }
     });
     if (!resp.ok) return NextResponse.json({ error: 'No session' }, { status: 401 });
