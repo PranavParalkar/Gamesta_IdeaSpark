@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@fontsource/orbitron": "^5.2.8",
+    "@google-cloud/cloud-sql-connector": "^1.8.5",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@types/bcryptjs": "^2.4.6",
