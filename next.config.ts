@@ -1,12 +1,16 @@
 import type { NextConfig } from "next";
 
+// Allow dev conveniences (Next.js HMR, source maps) while keeping
+// production strict. Dev requires 'unsafe-eval' and websocket connections.
+const isDev = process.env.NODE_ENV !== 'production';
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self'",
+  `connect-src 'self'${isDev ? " ws: wss:" : ''}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

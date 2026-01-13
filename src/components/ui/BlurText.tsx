@@ -41,6 +41,12 @@ const BlurText = ({
   onAnimationComplete,
   stepDuration = 0.35
 }: BlurTextProps) => {
+  // Ensure content is visible on first paint (SSR/dev) to avoid blank hero
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement | null>(null);
@@ -85,6 +91,15 @@ const BlurText = ({
   const stepCount = toSnapshots.length + 1;
   const totalDuration = stepDuration * (stepCount - 1);
   const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
+
+  // Until hydrated, render plain text (no animation) so content is visible immediately
+  if (!mounted) {
+    return (
+      <p ref={ref} className={`blur-text ${className} flex flex-wrap justify-center`}>
+        {text}
+      </p>
+    );
+  }
 
   return (
     <p ref={ref} className={`blur-text ${className} flex flex-wrap justify-center`}>
