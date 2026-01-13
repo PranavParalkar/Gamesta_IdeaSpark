@@ -6,11 +6,16 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  // Razorpay Checkout loads an external script and embeds frames.
+  `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://*.razorpay.com${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  // Razorpay may load images (logos/icons) from its own domains.
+  "img-src 'self' data: blob: https://*.razorpay.com https://checkout.razorpay.com",
   "font-src 'self'",
-  `connect-src 'self'${isDev ? " ws: wss:" : ''}`,
+  // Razorpay Checkout performs network calls to Razorpay.
+  `connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com${isDev ? " ws: wss:" : ''}`,
+  // Razorpay Checkout uses iframes.
+  "frame-src 'self' https://*.razorpay.com https://checkout.razorpay.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

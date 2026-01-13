@@ -14,10 +14,27 @@ export default function Header() {
   const [token, setToken] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setToken(getToken());
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const t = getToken();
+        if (!t) { if (mounted) setIsAdmin(false); return; }
+        const res = await fetch('/api/profile', { headers: { Authorization: `Bearer ${t}` } });
+        if (!res.ok) { if (mounted) setIsAdmin(false); return; }
+        const json = await res.json();
+        const flag = !!json?.user?.isAdmin;
+        if (mounted) setIsAdmin(flag);
+      } catch { if (mounted) setIsAdmin(false); }
+    })();
+    return () => { mounted = false; };
+  }, [token]);
 
   function signOut() {
     sessionStorage.removeItem("gamesta_token");
@@ -29,7 +46,9 @@ export default function Header() {
     { name: "Voting", href: "/ideas" },
     { name: "Idea", href: "/submit" },
     { name: "Events", href: "/events" },
+    ...(isAdmin ? [{ name: "Registrations", href: "/registrations" }] : []),
     { name: "Leaderboard", href: "/leaderboard" },
+    ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
   ];
 
   return (

@@ -3,9 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { Toaster } from 'react-hot-toast';
-import Header from "@/components/Header";
-import Link from "next/link";
-import ContactFloating from "@/components/ContactFloating";
+import AppChrome from "@/components/AppChrome";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,22 +40,7 @@ export default function RootLayout({
        
       >
         <ThemeProvider>
-          {/* Fixed Header */}
-          <div className="fixed top-3 left-0 right-0 z-50">
-            <div className="  px-4">
-              <div className="">
-                <Header />
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content - Add padding to prevent header overlap */}
-          <div className="">
-            {children}
-          </div>
-
-          {/* Floating contact button & modal (bottom-right) */}
-          <ContactFloating />
+          <AppChrome>{children}</AppChrome>
 
           <Toaster 
             position="top-center" 

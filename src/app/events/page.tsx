@@ -1,28 +1,44 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
 
-const timelineData = [
-  "BGMI Tournament",
-  "Chess Tournament",
-  "Debate Contest",
-  "Drone Race Competition",
-  "VR Experience",
-  "Photography Scavenger Hunt",
-  "Dance Face-off",
-  "Flying Simulator",
-  "Ramp Walk",
-  "GSQ (Google Squid Games)",
-  "Drone Simulator Competition",
-  "AeroCAD Face-Off",
-  "Poster Design Competition",
-  "Mobile Robocar Racing",
-  "Strongest on Campus",
-  "Valorant Tournament",
-];
+type EventItem = {
+  id: number;
+  name: string;
+  price?: number;
+  ticketLimit?: number | null;
+  ticketsSold?: number;
+  remaining?: number | null;
+};
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/events");
+        const json = await res.json().catch(() => ({}));
+        if (!mounted) return;
+        if (res.ok && Array.isArray(json?.data)) {
+          setEvents(json.data);
+        } else {
+          setEvents([]);
+        }
+      } catch {
+        if (mounted) setEvents([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen w-full text-white relative overflow-hidden">
       {/* 🌈 Energy Overlay */}
@@ -48,11 +64,19 @@ export default function EventsPage() {
           {/* Vertical line connecting all dots */}
           <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 via-purple-500 to-purple-800 hidden md:block" />
 
-          {timelineData.map((event, idx) => {
+          {loading && (
+            <div className="text-center text-white/70 py-10">Loading events…</div>
+          )}
+
+          {!loading && events.length === 0 && (
+            <div className="text-center text-white/70 py-10">No events found.</div>
+          )}
+
+          {events.map((event, idx) => {
             const isLeft = idx % 2 === 0;
             return (
               <motion.li
-                key={idx}
+                key={event.id ?? idx}
                 initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.05 }}
@@ -62,7 +86,7 @@ export default function EventsPage() {
                 }`}
               >
                 {/* Connector Dot */}
-                <div className="absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-4 border-[#0d0d10] shadow-lg z-20 relative" />
+                <div className="absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-4 border-[#0d0d10] shadow-lg z-20" />
 
                 {/* Event Card */}
                 <div
@@ -73,7 +97,7 @@ export default function EventsPage() {
                         : "md:ml-auto md:translate-x-[8%]"
                     }`}
                 >
-                  {event}
+                  {event.name}
                 </div>
               </motion.li>
             );
