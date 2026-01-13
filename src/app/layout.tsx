@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <head>
         {/* Ensure proper mobile viewport scaling */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
