@@ -263,3 +263,521 @@ body {
 .glow-right {
   animation: glowRight 2s infinite alternate;
 }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s ease forwards;
+}
+
+/* ===========================
+   Legacy AuthScreen Animations (scoped)
+   =========================== */
+
+.gamesta-auth {
+  /* Theme tokens for the auth screen */
+  --auth-bg: #1a1a2e;
+  --auth-panel: #000000;
+  --auth-text: #ffffff;
+  /* Match app vibe (Tailwind fuchsia/purple) */
+  --auth-accent: #d946ef; /* fuchsia-500 */
+  --auth-accent-2: #7c3aed; /* violet-600 */
+}
+
+.gamesta-auth .auth-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 500px;
+  border: 2px solid var(--auth-accent);
+  box-shadow: 0 0 25px color-mix(in srgb, var(--auth-accent) 55%, transparent);
+  overflow: hidden;
+}
+
+.gamesta-auth .auth-wrapper .credentials-panel {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.gamesta-auth .credentials-panel.signin {
+  left: 0;
+  padding: 0 40px;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element {
+  transform: translateX(0%);
+  transition: 0.7s;
+  opacity: 1;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element:nth-child(1) {
+  transition-delay: 2.1s;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element:nth-child(2) {
+  transition-delay: 2.2s;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element:nth-child(3) {
+  transition-delay: 2.3s;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element:nth-child(4) {
+  transition-delay: 2.4s;
+}
+
+.gamesta-auth .credentials-panel.signin .slide-element:nth-child(5) {
+  transition-delay: 2.5s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element {
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(5) {
+  transition-delay: 0.4s;
+}
+
+.gamesta-auth .credentials-panel.signup {
+  right: 0;
+  padding: 0 60px;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element {
+  transform: translateX(120%);
+  transition: 0.7s ease;
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(5) {
+  transition-delay: 0.4s;
+}
+
+.gamesta-auth .credentials-panel.signup .slide-element:nth-child(6) {
+  transition-delay: 0.5s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element {
+  transform: translateX(0%);
+  opacity: 1;
+  filter: blur(0px);
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(1) {
+  transition-delay: 1.7s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(2) {
+  transition-delay: 1.8s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(3) {
+  transition-delay: 1.9s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(4) {
+  transition-delay: 1.9s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(5) {
+  transition-delay: 2.0s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(6) {
+  transition-delay: 2.1s;
+}
+
+.gamesta-auth .credentials-panel h2 {
+  font-size: 32px;
+  text-align: center;
+}
+
+.gamesta-auth .credentials-panel .field-wrapper {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin-top: 25px;
+}
+
+.gamesta-auth .field-wrapper input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 2px solid #fff;
+  padding-right: 23px;
+  transition: 0.5s;
+}
+
+.gamesta-auth .field-wrapper input:focus,
+.gamesta-auth .field-wrapper input:valid {
+  border-bottom: 2px solid var(--auth-accent);
+}
+
+.gamesta-auth .field-wrapper label {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #fff;
+  transition: 0.5s;
+}
+
+.gamesta-auth .field-wrapper input:focus ~ label,
+.gamesta-auth .field-wrapper input:valid ~ label {
+  top: -5px;
+  color: var(--auth-accent);
+}
+
+.gamesta-auth .field-wrapper i {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  font-size: 18px;
+  transform: translateY(-50%);
+  color: #fff;
+}
+
+.gamesta-auth .field-wrapper input:focus ~ i,
+.gamesta-auth .field-wrapper input:valid ~ i {
+  color: var(--auth-accent);
+}
+
+.gamesta-auth .submit-button {
+  position: relative;
+  width: 100%;
+  height: 45px;
+  background: transparent;
+  border-radius: 40px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px solid var(--auth-accent);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.gamesta-auth .submit-button::before {
+  content: "";
+  position: absolute;
+  height: 300%;
+  width: 100%;
+  background: linear-gradient(
+    var(--auth-bg),
+    var(--auth-accent),
+    var(--auth-bg),
+    var(--auth-accent-2)
+  );
+  top: -100%;
+  left: 0;
+  z-index: -1;
+  transition: 0.5s;
+}
+
+.gamesta-auth .submit-button:hover::before {
+  top: 0;
+}
+
+.gamesta-auth .switch-link {
+  font-size: 14px;
+  text-align: center;
+  margin: 20px 0 10px;
+}
+
+.gamesta-auth .switch-link a,
+.gamesta-auth .switch-link button {
+  text-decoration: none;
+  color: var(--auth-accent);
+  font-weight: 600;
+}
+
+.gamesta-auth .switch-link a:hover,
+.gamesta-auth .switch-link button:hover {
+  text-decoration: underline;
+}
+
+.gamesta-auth .welcome-section {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.gamesta-auth .welcome-section.signin {
+  right: 0;
+  text-align: right;
+  padding: 0 40px 60px 150px;
+}
+
+.gamesta-auth .welcome-section.signin .slide-element {
+  transform: translateX(0);
+  transition: 0.7s ease;
+  opacity: 1;
+  filter: blur(0px);
+}
+
+.gamesta-auth .auth-wrapper.toggled .welcome-section.signin .slide-element {
+  transform: translateX(120%);
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.gamesta-auth .welcome-section.signup {
+  left: 0;
+  text-align: left;
+  padding: 0 150px 60px 38px;
+  pointer-events: none;
+}
+
+.gamesta-auth .welcome-section.signup .slide-element {
+  transform: translateX(-120%);
+  transition: 0.7s ease;
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.gamesta-auth .auth-wrapper.toggled .welcome-section.signup .slide-element {
+  transform: translateX(0%);
+  opacity: 1;
+  filter: blur(0);
+}
+
+.gamesta-auth .welcome-section h2 {
+  text-transform: uppercase;
+  font-size: 36px;
+  line-height: 1.3;
+}
+
+.gamesta-auth .welcome-section p {
+  font-size: 16px;
+}
+
+.gamesta-auth .auth-wrapper .background-shape {
+  position: absolute;
+  right: 0;
+  top: -5px;
+  height: 600px;
+  width: 850px;
+  background: linear-gradient(45deg, var(--auth-accent), var(--auth-accent-2));
+  transform: rotate(10deg) skewY(40deg);
+  transform-origin: bottom right;
+  transition: 1.5s ease;
+  transition-delay: 1.6s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .background-shape {
+  transform: rotate(0deg) skewY(0deg);
+  transition-delay: 0.5s;
+}
+
+.gamesta-auth .auth-wrapper .secondary-shape {
+  position: absolute;
+  left: 250px;
+  top: 100%;
+  height: 700px;
+  width: 850px;
+  background: var(--auth-panel);
+  border-top: 3px solid var(--auth-accent);
+  transform: rotate(0deg) skewY(0deg);
+  transform-origin: bottom left;
+  transition: 1.5s ease;
+  transition-delay: 0.5s;
+}
+
+.gamesta-auth .auth-wrapper.toggled .secondary-shape {
+  transform: rotate(-11deg) skewY(-41deg);
+  transition-delay: 1.2s;
+}
+
+@media (max-width: 768px) {
+  .gamesta-auth .auth-wrapper {
+    height: auto;
+    min-height: 500px;
+    flex-direction: column;
+  }
+
+  .gamesta-auth .auth-wrapper .credentials-panel,
+  .gamesta-auth .welcome-section {
+    width: 100%;
+    position: relative;
+  }
+
+  .gamesta-auth .credentials-panel.signin,
+  .gamesta-auth .credentials-panel.signup {
+    padding: 40px 30px;
+    left: 0;
+    right: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signin {
+    display: flex;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .gamesta-auth .credentials-panel.signup {
+    display: none;
+  }
+
+  .gamesta-auth .auth-wrapper.toggled .credentials-panel.signin {
+    display: none;
+    animation: fadeOutDown 0.6s ease forwards;
+  }
+
+  .gamesta-auth .auth-wrapper.toggled .credentials-panel.signup {
+    display: flex;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element,
+  .gamesta-auth .credentials-panel.signup .slide-element {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+    animation: slideInUp 0.5s ease forwards;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element:nth-child(1),
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(1) {
+    animation-delay: 0.1s;
+    opacity: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element:nth-child(2),
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(2) {
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element:nth-child(3),
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(3) {
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element:nth-child(4),
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(4) {
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signin .slide-element:nth-child(5),
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(5) {
+    animation-delay: 0.5s;
+    opacity: 0;
+  }
+
+  .gamesta-auth .credentials-panel.signup .slide-element:nth-child(6) {
+    animation-delay: 0.6s;
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeOutDown {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .gamesta-auth .welcome-section {
+    display: none;
+  }
+
+  .gamesta-auth .credentials-panel h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .gamesta-auth .auth-wrapper .background-shape,
+  .gamesta-auth .auth-wrapper .secondary-shape {
+    display: none;
+  }
+
+  .gamesta-auth .field-wrapper {
+    margin-top: 20px;
+  }
+}

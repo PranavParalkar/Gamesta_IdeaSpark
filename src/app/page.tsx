@@ -1,70 +1,428 @@
 "use client";
-import React, { useState } from "react";
-import Header from "../components/Header";
-import { Button } from "../components/ui/Button";
-import { hyperspeedPresets } from "@/lib/hyperspeedPresets";
-import Hyperspeed from "../components/ui/Hyperspeed";
+
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "motion/react";
 import BlurText from "../components/ui/BlurText";
+import Antigravity from "./Antigravity";
+import PrismaticBurst from "../components/ui/PrismaticBurst";
+import FloatingOrbs from "../components/ui/FloatingOrbs";
+import AnimatedGrid from "../components/ui/AnimatedGrid";
+import PulseRings from "../components/ui/PulseRings";
+import GlowLines from "../components/ui/GlowLines";
+import ParticleField from "../components/ui/ParticleField";
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
+import Sparkline from "../components/ui/Sparkline";
+import ChatBot from "../components/ChatBot";
 
 export default function Home() {
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-
   return (
-    <div className="relative min-h-screen">
-      {/* Hyperspeed Background */}
-      <div className="absolute inset-0 z-0">
-        <Hyperspeed effectOptions={hyperspeedPresets.one} />
+    <div className="relative min-h-screen bg-black text-white overflow-hidden">
+      {/* Global animated background layers */}
+      <div className="fixed inset-0 z-0">
+       
+        {/* <FloatingOrbs count={8} colors={["#ff5ec8", "#8f5bff", "#00f6ff"]} /> */}
+        <AnimatedGrid />
+        <ParticleField count={60} colors={["#ff5ec8", "#8f5bff", "#00f6ff"]} />
       </div>
 
-      {/* Foreground Content */}
-  <div className="relative z-10">
+      {/* HERO SECTION */}
+      <section className="relative min-h-screen flex items-center justify-center">
+        {/* Hero Antigravity */}
+        <div className="absolute inset-0 z-[1]">
+          <div className="w-full h-full">
+            <Antigravity
+              count={350}
+              magnetRadius={8}
+              ringRadius={9}
+              waveSpeed={0.5}
+              waveAmplitude={1.2}
+              particleSize={1.8}
+              lerpSpeed={0.06}
+              color="#ff5ec8"
+              autoAnimate
+              particleVariance={1.2}
+              rotationSpeed={0.2}
+              depthFactor={1.2}
+              pulseSpeed={3.5}
+              particleShape="capsule"
+              fieldStrength={12}
+            />
+          </div>
+        </div>
 
-        {/* Hero Section */}
-  <section className="relative py-20 sm:py-32 min-h-[70vh]">
-          <div className="mx-auto px-4 relative z-10">
-            <div className="text-center text-white space-y-6 animate-fade-in">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight space-y-2 text-center">
-                <BlurText text="Spark Your" delay={120} animateBy="words" direction="top" className="justify-center" />
-                <BlurText text="Creative ideas" delay={260} animateBy="words" direction="top" className="justify-center" />
-              </div>
-              <div className="mt-4">
-                <BlurText
-                  text="Join the community of innovators. Collect, vote, and showcase college fest ideas that inspire and transform."
-                  delay={80}
-                  animateBy="words"
-                  direction="top"
-                  className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed"
+        {/* Pulse rings in hero */}
+        <PulseRings count={4} size={500} color="#ff5ec8" />
+        <GlowLines />
+
+        {/* Hero content */}
+        <div className="relative z-20 mt-20 px-4 text-center space-y-8 max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md border border-fuchsia-500/40 text-xs uppercase tracking-[0.3em] text-fuchsia-200 shadow-[0_0_20px_rgba(255,94,200,0.4)]"
+          >
+            <motion.span
+              className="w-2 h-2 rounded-full bg-emerald-400"
+              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span>Live at MITAOE</span>
+            <span className="text-white/50">·</span>
+            <span>College Fest Arena</span>
+          </motion.div>
+
+          <motion.div 
+            className="relative z-20 flex justify-center items-center"
+            initial={{ opacity: 0, scale: 0.8, y: -30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
+          >
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <Image
+                src="/logo1.png"
+                alt="Gamesta Logo"
+                width={600}
+                height={200}
+                className="w-auto h-24 sm:h-32 md:h-40 lg:h-64 object-contain drop-shadow-[0_0_40px_rgba(255,94,200,0.8)]"
+                priority
+                style={{
+                  filter: 'drop-shadow(0 0 30px rgba(255, 94, 200, 0.6)) drop-shadow(0 0 60px rgba(147, 51, 234, 0.4))',
+                }}
+              />
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-fuchsia-500/20 to-purple-500/20 blur-2xl -z-10"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </motion.div>
+          </motion.div>
+{/* 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className=""
+          >
+            <BlurText
+              text="Where college fest ideas become reality. Submit concepts, vote in real-time, and watch the most electrifying events rise to the top."
+              delay={60}
+              animateBy="words"
+              direction="top"
+              className="text-lg md:text-lg text-white/90 leading-relaxed max-w-3xl mx-auto"
+            />
+          </motion.div> */}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-6"
+          >
+            <Link href="/ideas">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative px-10 py-4 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-lg font-semibold shadow-[0_0_40px_rgba(236,72,153,0.8)] overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-pink-400 to-fuchsia-500 opacity-0 group-hover:opacity-100"
+                  transition={{ duration: 0.3 }}
                 />
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-                <a href="/ideas">
-                <Button size="lg" className="bg-gradient-to-l from-pink-300 to-purple-500 text-primary hover:bg-white/90 text-lg px-8 py-3">
-                  Explore Ideas
-                </Button>
-                </a>
-                <a href="/submit">
-                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-3">
-                    Submit Your Idea
-                  </Button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+                <span className="relative z-10">Explore Ideas</span>
+              </motion.button>
+            </Link>
+            <Link href="/submit">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative px-10 py-4 rounded-full border-2 border-purple-400/60 bg-purple-900/30 backdrop-blur-sm text-white text-lg font-semibold hover:bg-purple-800/40 transition-all shadow-[0_0_30px_rgba(147,51,234,0.5)]"
+              >
+                Submit Your Idea
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Footer */}
-        {/* <footer className="bg-muted/30 backdrop-blur-sm py-12">
-          <div className="container mx-auto px-4 text-center text-white">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <img src="/logo.png" alt="Gamesta" className="h-8 w-8 object-contain rounded" />
-              <span className="text-xl font-bold">Gamesta</span>
-            </div>
-            <p className="text-muted-foreground">
-              Empowering creativity and innovation in college communities.
+      {/* WHAT IS GAMESTA SECTION */}
+      <section className="relative z-10 py-20 md:py-32 px-4 bg-black/80 backdrop-blur-sm">
+        {/* Section background effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          <FloatingOrbs count={4} colors={["#8f5bff", "#ff5ec8"]} />
+          <ParticleField count={30} colors={["#8f5bff", "#ff5ec8"]} />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto space-y-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <BlurText
+              text="What is Gamesta?"
+              delay={100}
+              animateBy="words"
+              direction="top"
+              className="text-3xl md:text-4xl font-bold justify-center bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent"
+            />
+            <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
+              A gamified platform where your college fest ideas become quests,
+              and the crowd decides what goes live on stage.
             </p>
+          </motion.div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                title: "Idea Arena",
+                desc: "Drop your wildest fest ideas — new events, twists on classics, or completely experimental formats. The arena is open 24/7.",
+                icon: "💡",
+                gradient: "from-pink-500/20 to-fuchsia-500/20",
+              },
+              {
+                title: "Live Voting Engine",
+                desc: "Students upvote ideas they love. Gamesta turns that into live leaderboards so coordinators instantly see what the crowd wants.",
+                icon: "⚡",
+                gradient: "from-purple-500/20 to-pink-500/20",
+              },
+              {
+                title: "Events & Rewards",
+                desc: "Ideas that win become real events. Earn reputation, climb the leaderboard, and showcase your name across the fest.",
+                icon: "🏆",
+                gradient: "from-fuchsia-500/20 to-purple-500/20",
+              },
+            ].map((feature, idx) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <Card
+                  transparent
+                  hover
+                  className={`bg-gradient-to-br ${feature.gradient} border border-white/20 backdrop-blur-md relative overflow-hidden group`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 via-fuchsia-500/0 to-purple-500/0 group-hover:from-pink-500/10 group-hover:via-fuchsia-500/10 group-hover:to-purple-500/10 transition-all duration-500" />
+                  <CardHeader className="relative z-10">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-3xl">{feature.icon}</span>
+                      <CardTitle className="text-white text-xl">
+                        {feature.title}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative z-10 text-sm text-white/80 leading-relaxed">
+                    {feature.desc}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
-        </footer> */}
-      </div>
+        </div>
+      </section>
+
+      {/* STATS SECTION WITH ANIMATED BACKGROUND */}
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <PrismaticBurst
+            intensity={0.4}
+            speed={0.8}
+            animationType="rotate3d"
+            colors={["#ff5ec8", "#8f5bff"]}
+            mixBlendMode="screen"
+          />
+          <GlowLines />
+        </div>
+        <div className="relative z-10 max-w-5xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card
+              transparent
+              className="bg-black/70 border border-white/20 backdrop-blur-xl shadow-[0_0_60px_rgba(255,94,200,0.3)]"
+            >
+              <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <CardTitle className="text-xl md:text-2xl mb-2 bg-gradient-to-r from-pink-400 to-fuchsia-400 bg-clip-text text-transparent">
+                    Gamesta in Motion
+                  </CardTitle>
+                  <p className="text-sm md:text-base text-white/60">
+                    Real-time pulse of campus creativity
+                  </p>
+                </div>
+                <div className="text-right text-sm md:text-base text-white/80">
+                  <div className="text-white/60">Idea submissions · last 7 days</div>
+                  <motion.div
+                    className="text-emerald-400 font-bold text-lg md:text-xl"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                  >
+                    +38% vs previous week
+                  </motion.div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Sparkline
+                    data={[2, 4, 3, 5, 4, 7, 9, 8, 10]}
+                    width={500}
+                    height={80}
+                    stroke="#22c55e"
+                    fill="rgba(34,197,94,0.2)"
+                  />
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS SECTION */}
+      <section className="relative z-10 py-20 md:py-32 px-4 bg-black/90">
+        {/* Background effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          <AnimatedGrid />
+          <PulseRings count={3} size={600} color="#8f5bff" />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto space-y-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <BlurText
+              text="How Gamesta Works"
+              delay={100}
+              animateBy="words"
+              direction="top"
+              className="text-3xl md:text-4xl font-bold justify-center bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent"
+            />
+            <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
+              Three simple steps to turn your ideas into packed auditoriums.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                label: "Submit",
+                text: "Share your fest idea with a short pitch. No formal deck, just the raw concept.",
+                color: "#ff5ec8",
+              },
+              {
+                step: "02",
+                label: "Vote",
+                text: "Friends and students react, vote, and discuss. The best ideas naturally rise.",
+                color: "#8f5bff",
+              },
+              {
+                step: "03",
+                label: "Go Live",
+                text: "Organizers pick from the top ideas and spin them into real‑world events.",
+                color: "#00f6ff",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 40, rotateX: -15 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                whileHover={{ y: -12, scale: 1.03 }}
+                className="relative"
+              >
+                <Card
+                  transparent
+                  className="bg-black/60 border border-white/20 backdrop-blur-md h-full relative overflow-hidden group"
+                >
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: `radial-gradient(circle at center, ${item.color}15, transparent 70%)`,
+                    }}
+                  />
+                  <CardHeader className="relative z-10 pb-4">
+                    <div className="flex items-center gap-4 mb-3">
+                      <motion.span
+                        className="inline-flex h-12 w-12 items-center justify-center rounded-full border-2 text-lg font-bold"
+                        style={{
+                          borderColor: item.color,
+                          color: item.color,
+                          boxShadow: `0 0 20px ${item.color}40`,
+                        }}
+                        whileHover={{ rotate: 360, scale: 1.1 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        {item.step}
+                      </motion.span>
+                      <CardTitle className="text-white text-xl md:text-2xl">
+                        {item.label}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative z-10 text-sm md:text-base text-white/80 leading-relaxed">
+                    {item.text}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+            className="text-center pt-8"
+          >
+            <Link href="/events">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center justify-center px-10 py-4 rounded-full border-2 border-cyan-400/60 text-base md:text-lg text-cyan-100 bg-cyan-500/10 hover:bg-cyan-500/20 backdrop-blur-sm transition-all shadow-[0_0_30px_rgba(34,211,238,0.5)]"
+              >
+                Explore Live Events Powered by Gamesta
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Floating ChatBot */}
+      <ChatBot />
     </div>
   );
 }

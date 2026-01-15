@@ -15,6 +15,16 @@ export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleGoogleAuth = () => {
+    const callbackUrl =
+      typeof window !== 'undefined'
+        ? encodeURIComponent(`${window.location.origin}/login?oauth=1`)
+        : encodeURIComponent('/login?oauth=1');
+    if (typeof window !== 'undefined') {
+      window.location.href = `/api/auth/signin/google?callbackUrl=${callbackUrl}`;
+    }
+  };
+
   // Preserved OAuth logic
   useEffect(() => {
     try {
@@ -106,7 +116,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center mt-20 bg-[#1a1a2e] p-5  text-white overflow-hidden">
+    <div className="gamesta-auth relative flex flex-col items-center justify-center mt-20 bg-[#1a1a2e] p-5 text-white overflow-hidden">
       {/* Background PrismaticBurst */}
       <div className="fixed inset-0 pointer-events-none">
         <PrismaticBurst
@@ -118,44 +128,39 @@ export default function LoginPage() {
         />
       </div>
 
-      <style>{`
-        /* Animations ported from style.css */
-        @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(30px); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
-      
-      {/* Auth Wrapper */}
-      <div className={`relative bg-black rounded-4xl w-full max-w-[800px] h-[500px] border-2 border-fuchsia-500 shadow-[0_0_25px_rgba(217,70,239,0.5)] overflow-hidden transition-all duration-700 z-10 
-        max-md:h-auto max-md:min-h-[500px] max-md:flex max-md:flex-col ${isRegisterMode ? 'toggled' : ''}`}>
+      {/* Auth Wrapper (matches legacy AuthScreen structure) */}
+      <div
+        className={`auth-wrapper relative bg-black rounded-4xl w-full max-w-[800px] h-[500px] border-2 border-fuchsia-500 shadow-[0_0_25px_rgba(217,70,239,0.5)] overflow-hidden transition-all duration-700 z-10 
+        max-md:h-auto max-md:min-h-[500px] max-md:flex max-md:flex-col ${isRegisterMode ? 'toggled' : ''}`}
+      >
         
-        {/* Background Shapes */}
-        {/* Primary Shape */}
-        <div className={`absolute -top-[5px] right-[0px] h-[600px] w-[850px] bg-gradient-to-tr from-[#ce1fa2] to-purple-700 origin-bottom-right transition-all duration-[500ms] ease-out delay-[600ms]
-          ${isRegisterMode ? 'rotate-0 skew-y-0 delay-[500ms]' : 'rotate-[10deg] skew-y-[40deg]'} max-md:hidden`} />
-        
-        {/* Secondary Shape */}
-        <div className={`absolute top-full left-[250px] h-[700px] w-[850px] bg-black border-t-[3px] border-fuchsia-500 origin-bottom-left transition-all duration-[500ms] ease-out delay-[300ms]
-          ${isRegisterMode ? '-rotate-[11deg] -skew-y-[41deg] delay-[200ms]' : 'rotate-0 skew-y-0'} max-md:hidden`} />
+        {/* Background Shapes (mapped to legacy classes) */}
+        <div className="background-shape max-md:hidden" />
+        <div className="secondary-shape max-md:hidden" />
 
         {/* ===== Sign In Panel ===== */}
-        <div className={`absolute top-0 left-0 w-1/2 h-full flex flex-col justify-center px-10 transition-all duration-700
-          max-md:relative max-md:w-full max-md:p-8 max-md:left-0 max-md:right-0
+        <div
+          className={`credentials-panel signin absolute top-0 left-0 w-1/2 h-full flex flex-col justify-center px-10 transition-all duration-700
+          max-md:absolute max-md:inset-0 max-md:w-full max-md:p-8
           ${isRegisterMode 
-            ? 'opacity-0 translate-x-[-120%] z-0 max-md:hidden max-md:animate-[fadeOutDown_0.6s_ease_forwards]' 
-            : 'opacity-100 translate-x-0 z-10 max-md:flex max-md:animate-[fadeInUp_0.6s_ease_forwards]'}`}
+            ? 'opacity-0 translate-x-[-120%] z-0 max-md:pointer-events-none' 
+            : 'opacity-100 translate-x-0 z-10'}`}
         >
-          <h2 className={`text-4xl text-center text-white mb-5 transition-transform duration-700 delay-[1100ms]
+          <h2
+            className={`slide-element text-4xl text-center text-white mb-5 transition-transform duration-700 delay-[1100ms]
              ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
-             max-md:delay-100 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.1s]`}>
-             Login
+             max-md:delay-100 max-md:opacity-100`}
+          >
+            Login
           </h2>
           <form onSubmit={(e) => submit(e, 'login')}>
             
             {/* Email Field */}
-            <div className={`relative w-full h-[50px] mt-6 transition-transform duration-700 delay-[1200ms]
+            <div
+              className={`field-wrapper slide-element relative w-full h-[50px] mt-6 transition-transform duration-700 delay-[1200ms]
                ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
-               max-md:delay-200 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.2s]`}>
+               max-md:delay-200 max-md:opacity-100`}
+            >
               <input 
                 type="text" 
                 required 
@@ -174,9 +179,11 @@ export default function LoginPage() {
             </div>
 
            {/* Password Field */}
-<div className={`relative w-full h-[50px] mt-6 transition-transform duration-700 delay-[1300ms]
+          <div
+            className={`field-wrapper slide-element relative w-full h-[50px] mt-6 transition-transform duration-700 delay-[1300ms]
    ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
-   max-md:delay-300 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.3s]`}>
+   max-md:delay-300 max-md:opacity-100`}
+          >
 
   <input 
     type={showPassword ? "text" : "password"}
@@ -222,63 +229,131 @@ export default function LoginPage() {
 
 
             {error && !isRegisterMode && (
-              <div className={`mt-3 text-red-400 text-sm text-center transition-transform duration-700 delay-[1400ms]
+              <div
+                className={`slide-element mt-3 text-red-400 text-sm text-center transition-transform duration-700 delay-[1400ms]
                 ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}`}>
                 {error}
               </div>
             )}
 
-            <div className={`relative w-full h-[45px] mt-6 transition-transform duration-700 delay-[1400ms]
+            <div
+              className={`field-wrapper slide-element relative w-full h-[45px] mt-6 transition-transform duration-700 delay-[1400ms]
                ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
-               max-md:delay-400 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.4s]`}>
-              <button className="group relative w-full h-full bg-transparent rounded-full border-2 border-fuchsia-500 font-semibold text-white overflow-hidden z-10 cursor-pointer" type="submit" disabled={loading}>
+               max-md:delay-400 max-md:opacity-100`}
+            >
+              <button
+                className="submit-button group relative w-full h-full bg-transparent rounded-full border-2 border-fuchsia-500 font-semibold text-white overflow-hidden z-10 cursor-pointer"
+                type="submit"
+                disabled={loading}
+              >
                 <span className="absolute top-full left-0 w-full h-[300%] bg-gradient-to-b from-[#1a1a2e] via-fuchsia-500 to-fuchsia-500 -z-10 transition-all duration-500 group-hover:top-0"></span>
                 {loading ? 'Logging in...' : 'Login'}
               </button>
             </div>
 
-            <div className={`mt-5 mb-2 text-center text-sm text-white transition-transform duration-700 delay-[1500ms]
+            
+            <div
+              className={`slide-element mt-3 text-center text-xs text-white/60 transition-transform duration-700 delay-[1550ms]
                ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
-               max-md:delay-500 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.5s]`}>
-              <p>Don&apos;t have an account? <br /> 
-                <button type="button" className="text-fuchsia-400 font-semibold hover:underline bg-transparent border-none cursor-pointer" 
-                  onClick={() => { setIsRegisterMode(true); setError(null); }}>
-                  Sign Up
-                </button>
-              </p>
+               max-md:delay-[550ms] max-md:opacity-100`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="flex-1 h-px bg-white/10" />
+                <span>or continue with</span>
+                <span className="flex-1 h-px bg-white/10" />
+              </div>
+              <button
+                type="button"
+                onClick={handleGoogleAuth}
+                className="group mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-white text-black px-4 py-2 text-xs font-semibold
+                           transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-100 hover:shadow-[0_0_18px_rgba(248,250,252,0.4)]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  className="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+                >
+                  <path
+                    fill="#FFC107"
+                    d="M43.6 20.5H42V20H24v8h11.3C33.8 31.9 29.3 35 24 35 16.8 35 11 29.2 11 22s5.8-13 13-13c3.3 0 6.3 1.2 8.6 3.4l5.7-5.7C34.6 3.3 29.6 1 24 1 11.8 1 2 10.8 2 23s9.8 22 22 22 22-9.8 22-22c0-1.3-.1-2.3-.4-3.5z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="M6.3 14.7l6.6 4.8C14.3 16.2 18.8 13 24 13c3.3 0 6.3 1.2 8.6 3.4l5.7-5.7C34.6 7.3 29.6 5 24 5 16.1 5 9.4 9.1 6.3 14.7z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 41c5.2 0 10.1-2 13.7-5.3l-6.3-5.3C29.2 31.9 26.8 33 24 33c-5.2 0-9.7-3.1-11.6-7.6l-6.6 5C9.4 38.9 16.1 43 24 43z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.6 20.5H42V20H24v8h11.3c-1.3 2.9-3.5 5.1-6.3 6.4l6.3 5.3C37.1 40.2 42 36 44.7 29.9c-.8-2.4-1.1-4.7-1.1-7.4z"
+                  />
+                </svg>
+                <span>Sign in with Google</span>
+              </button>
             </div>
           </form>
         </div>
 
         {/* ===== Welcome Section - Sign In (Right Side) ===== */}
-        <div className={`absolute top-0 right-0 w-1/2 h-full flex flex-col justify-center text-right pr-10 pl-[150px] pointer-events-none transition-all duration-700
+        <div
+          className={`welcome-section signin absolute top-0 right-0 w-1/2 h-full flex flex-col justify-center text-right pr-10 pl-[150px] transition-all duration-700
           max-md:hidden
-          ${isRegisterMode ? 'opacity-0 translate-x-[120%] blur-[10px]' : 'opacity-100 translate-x-0 blur-0'}`}>
-          <h2 className={`text-4xl text-white uppercase leading-tight mb-2 transition-all duration-700 delay-[1000ms]
-             ${isRegisterMode ? 'translate-x-[120%]' : 'translate-x-0'}`}>
+          ${isRegisterMode ? 'opacity-0 translate-x-[120%] blur-[10px]' : 'opacity-100 translate-x-0 blur-0'}`}
+        >
+          <h2
+            className={`slide-element text-4xl text-center text-white uppercase leading-tight mb-2 transition-all duration-700 delay-[1000ms] pointer-events-none
+             ${isRegisterMode ? 'translate-x-[120%]' : 'translate-x-0'}`}
+          >
             WELCOME BACK!
           </h2>
-       
+          <div
+              className={`switch-link slide-element mt-5 mb-2 text-right text-sm text-white transition-transform duration-700 delay-[1500ms]
+               ${isRegisterMode ? 'opacity-0 -translate-x-full' : 'opacity-100 translate-x-0'}
+               max-md:delay-500 max-md:opacity-100`}
+            >
+              <p>
+                Don&apos;t have an account? <br />
+                <button
+                  type="button"
+                  className="text-fuchsia-400 bg-white font-semibold px-2 hover:bg-white/70   mt-3 p-1 rounded-lg border-none cursor-pointer pointer-events-auto"
+                  onClick={() => {
+                    setIsRegisterMode(true);
+                    setError(null);
+                  }}
+                >
+                  Sign Up
+                </button>
+              </p>
+            </div>
+
         </div>
+        
 
         {/* ===== Sign Up Panel (Right Side) ===== */}
-        <div className={`absolute top-0 -right-5 w-1/2 h-full flex flex-col justify-center px-[60px] transition-all duration-700
-          max-md:relative max-md:w-full max-md:p-8 max-md:left-0
+        <div
+          className={`credentials-panel signup absolute top-0 -right-5 w-1/2 h-full flex flex-col justify-center px-[60px] transition-all duration-700
+          max-md:absolute max-md:inset-0 max-md:w-full max-md:p-8 max-md:left-0
           ${isRegisterMode 
-            ? 'opacity-100 translate-x-0 z-10 max-md:flex max-md:animate-[fadeInUp_0.6s_ease_forwards]' 
-            : 'opacity-0 translate-x-[120%] z-0 max-md:hidden max-md:animate-[fadeOutDown_0.6s_ease_forwards]'}`}
+            ? 'opacity-100 translate-x-0 z-10' 
+            : 'opacity-0 translate-x-[120%] z-0 max-md:pointer-events-none'}`}
         >
-          <h2 className={`text-4xl text-center text-white mb-5 transition-transform duration-700 delay-0
+          <h2
+            className={`slide-element text-4xl text-center text-white mb-5 transition-transform duration-700 delay-0
              ${isRegisterMode ? 'opacity-100 translate-x-0 delay-[700ms]' : 'opacity-0 translate-x-[120%] blur-[10px]'}
-             max-md:delay-100 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.1s]`}>
-             Register
+             max-md:delay-100 max-md:opacity-100`}
+          >
+            Register
           </h2>
           <form onSubmit={(e) => submit(e, 'register')}>
             
             {/* Name Field */}
-            <div className={`relative w-full h-[50px] mt-6 transition-transform duration-700
+            <div
+              className={`field-wrapper slide-element relative w-full h-[50px] mt-6 transition-transform duration-700
                ${isRegisterMode ? 'opacity-100 translate-x-0 delay-[800ms]' : 'opacity-0 translate-x-[120%] blur-[10px] delay-[100ms]'}
-               max-md:delay-200 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.2s]`}>
+               max-md:delay-200 max-md:opacity-100`}
+            >
               <input 
                 type="text" 
                 required 
@@ -297,9 +372,11 @@ export default function LoginPage() {
             </div>
 
             {/* Email Field */}
-            <div className={`relative w-full h-[50px] mt-6 transition-transform duration-700
+            <div
+              className={`field-wrapper slide-element relative w-full h-[50px] mt-6 transition-transform duration-700
                ${isRegisterMode ? 'opacity-100 translate-x-0 delay-[900ms]' : 'opacity-0 translate-x-[120%] blur-[10px] delay-[200ms]'}
-               max-md:delay-300 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.3s]`}>
+               max-md:delay-300 max-md:opacity-100`}
+            >
               <input 
                 type="email" 
                 required
@@ -318,9 +395,11 @@ export default function LoginPage() {
             </div>
 
             {/* Password Field */}
-            <div className={`relative w-full h-[50px] mt-6 transition-transform duration-700
+            <div
+              className={`field-wrapper slide-element relative w-full h-[50px] mt-6 transition-transform duration-700
                ${isRegisterMode ? 'opacity-100 translate-x-0 delay-[1000ms]' : 'opacity-0 translate-x-[120%] blur-[10px] delay-[300ms]'}
-               max-md:delay-400 max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.4s]`}>
+               max-md:delay-400 max-md:opacity-100`}
+            >
               <input 
                 type="password" 
                 required 
@@ -339,46 +418,106 @@ export default function LoginPage() {
             </div>
             
             {error && isRegisterMode && (
-              <div className={`mt-3 text-red-400 text-sm text-center transition-transform duration-700 delay-[1100ms]
-                ${isRegisterMode ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[120%]'}`}>
+              <div
+                className={`slide-element mt-3 text-red-400 text-sm text-center transition-transform duration-700 delay-[1100ms]
+                ${isRegisterMode ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[120%]'}`}
+              >
                 {error}
               </div>
             )}
 
-            <div className={`relative w-full h-[45px] mt-6 transition-transform duration-700
+            <div
+              className={`field-wrapper slide-element relative w-full h-[45px] mt-6 transition-transform duration-700
                ${isRegisterMode ? 'opacity-100 translate-x-0 delay-[1100ms]' : 'opacity-0 translate-x-[120%] blur-[10px] delay-[400ms]'}
-               max-md:delay-[500ms] max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.5s]`}>
-              <button className="group relative w-full h-full bg-transparent rounded-full border-2 border-fuchsia-500 font-semibold text-white overflow-hidden z-10 cursor-pointer" type="submit" disabled={loading}>
+               max-md:delay-[500ms] max-md:opacity-100`}
+            >
+              <button
+                className="submit-button group relative w-full h-full bg-transparent rounded-full border-2 border-fuchsia-500 font-semibold text-white overflow-hidden z-10 cursor-pointer"
+                type="submit"
+                disabled={loading}
+              >
                 <span className="absolute top-full left-0 w-full h-[300%] bg-gradient-to-b from-[#1a1a2e] via-fuchsia-500 to-fuchsia-500 -z-10 transition-all duration-500 group-hover:top-0"></span>
                 {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
 
-            <div className={`mt-5 mb-2 text-center text-sm text-white transition-transform duration-700 delay-[1200ms]
+
+            <div
+              className={`slide-element mt-3 text-center text-xs text-white/60 transition-transform duration-700 delay-[1250ms]
                ${isRegisterMode ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[120%]'}
-               max-md:delay-[600ms] max-md:opacity-0 max-md:animate-[slideInUp_0.5s_ease_forwards_0.6s]`}>
-              <p>Already have an account? <br /> 
-                <button type="button" className="text-fuchsia-400 font-semibold hover:underline bg-transparent border-none cursor-pointer" 
-                  onClick={() => { setIsRegisterMode(false); setError(null); }}>
-                  Sign In
-                </button>
-              </p>
+               max-md:delay-[650ms] max-md:opacity-100`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="flex-1 h-px bg-white/10" />
+                <span>or continue with</span>
+                <span className="flex-1 h-px bg-white/10" />
+              </div>
+              <button
+                type="button"
+                onClick={handleGoogleAuth}
+                className="group mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-white text-black px-4 py-2 text-xs font-semibold
+                           transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-100 hover:shadow-[0_0_18px_rgba(248,250,252,0.4)]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  className="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+                >
+                  <path
+                    fill="#FFC107"
+                    d="M43.6 20.5H42V20H24v8h11.3C33.8 31.9 29.3 35 24 35 16.8 35 11 29.2 11 22s5.8-13 13-13c3.3 0 6.3 1.2 8.6 3.4l5.7-5.7C34.6 3.3 29.6 1 24 1 11.8 1 2 10.8 2 23s9.8 22 22 22 22-9.8 22-22c0-1.3-.1-2.3-.4-3.5z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="M6.3 14.7l6.6 4.8C14.3 16.2 18.8 13 24 13c3.3 0 6.3 1.2 8.6 3.4l5.7-5.7C34.6 7.3 29.6 5 24 5 16.1 5 9.4 9.1 6.3 14.7z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 41c5.2 0 10.1-2 13.7-5.3l-6.3-5.3C29.2 31.9 26.8 33 24 33c-5.2 0-9.7-3.1-11.6-7.6l-6.6 5C9.4 38.9 16.1 43 24 43z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.6 20.5H42V20H24v8h11.3c-1.3 2.9-3.5 5.1-6.3 6.4l6.3 5.3C37.1 40.2 42 36 44.7 29.9c-.8-2.4-1.1-4.7-1.1-7.4z"
+                  />
+                </svg>
+                <span>Sign up with Google</span>
+              </button>
             </div>
           </form>
         </div>
 
         {/* ===== Welcome Section - Sign Up (Left Side) ===== */}
-        <div className={`absolute top-0 left-0 w-1/2 h-full flex flex-col justify-center text-left pl-[38px] pr-[150px] pointer-events-none transition-all duration-700
+        <div
+          className={`welcome-section signup absolute top-0 left-0 w-1/2 h-full flex flex-col justify-center text-left pl-[38px] pr-[150px] transition-all duration-700
           max-md:hidden
-          ${isRegisterMode ? 'opacity-100 translate-x-0 blur-0' : 'opacity-0 translate-x-[-120%] blur-[10px]'}`}>
-          <h2 className={`text-4xl text-white uppercase leading-tight mb-2 transition-all duration-700 delay-0
-             ${isRegisterMode ? 'translate-x-0 delay-[200ms]' : 'translate-x-[120%]'}`}>
+          ${isRegisterMode ? 'opacity-100 translate-x-0 blur-0' : 'opacity-0 translate-x-[-120%] blur-[10px]'}`}
+        >
+          <h2
+            className={`slide-element text-4xl text-white text-center uppercase leading-tight mb-2 transition-all duration-700 delay-0 pointer-events-none
+             ${isRegisterMode ? 'translate-x-0 delay-[200ms]' : 'translate-x-[120%]'}`}
+          >
             WELCOME!
           </h2>
-          <p className={`text-base text-white transition-all duration-700 delay-[800ms]
-             ${isRegisterMode ? 'translate-x-0' : 'translate-x-[-120%]'}`}>
-            Enter your personal details to use all of site features
-          </p>
+
+          <div
+            className={`switch-link slide-element mt-5 mb-2 text-left text-sm text-white transition-transform duration-700 delay-[1200ms]
+             ${isRegisterMode ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[-120%]'}
+             max-md:delay-[600ms] max-md:opacity-100`}
+          >
+            <p>
+              Already have an account? <br />
+              <button
+                type="button"
+                className="text-fuchsia-400 bg-white font-semibold px-2 hover:bg-white/70   mt-3 p-1 rounded-lg border-none cursor-pointer pointer-events-auto"
+                onClick={() => {
+                  setIsRegisterMode(false);
+                  setError(null);
+                }}
+              >
+                Sign In
+              </button>
+            </p>
+          </div>
         </div>
 
       </div>

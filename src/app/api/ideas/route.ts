@@ -26,32 +26,45 @@ export async function GET(req: NextRequest) {
     userId = null;
   }
 
-  let rows: any[] = [];
-  if (userId) {
-    rows = await query(
-      `SELECT i.id, i.title, i.description, i.created_at,
-         COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count,
-         MAX(CASE WHEN vu.voter_user_id = ? AND vu.vote = 1 THEN 1 ELSE 0 END) as voted_by_you
-       FROM ideas i
-       LEFT JOIN votes v ON v.idea_id = i.id
-       LEFT JOIN votes vu ON (vu.idea_id = i.id AND vu.voter_user_id = ?)
-       GROUP BY i.id
-       ORDER BY score DESC, vote_count DESC
-       LIMIT ${perPage} OFFSET ${offset}`,
-      [userId, userId]
-    );
-  } else {
-    rows = await query(
-      `SELECT i.id, i.title, i.description, i.created_at, COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count, 0 as voted_by_you
-       FROM ideas i
-       LEFT JOIN votes v ON v.idea_id = i.id
-       GROUP BY i.id
-       ORDER BY score DESC, vote_count DESC
-       LIMIT ${perPage} OFFSET ${offset}`
-    );
-  }
+  try {
+    let rows: any[] = [];
+    if (userId) {
+      rows = await query(
+        `SELECT i.id, i.title, i.description, i.created_at,
+           COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count,
+           MAX(CASE WHEN vu.voter_user_id = ? AND vu.vote = 1 THEN 1 ELSE 0 END) as voted_by_you
+         FROM ideas i
+         LEFT JOIN votes v ON v.idea_id = i.id
+         LEFT JOIN votes vu ON (vu.idea_id = i.id AND vu.voter_user_id = ?)
+         GROUP BY i.id
+         ORDER BY score DESC, vote_count DESC
+         LIMIT ${perPage} OFFSET ${offset}`,
+        [userId, userId]
+      );
+    } else {
+      rows = await query(
+        `SELECT i.id, i.title, i.description, i.created_at, COALESCE(SUM(v.vote),0) as score, COUNT(v.id) as vote_count, 0 as voted_by_you
+         FROM ideas i
+         LEFT JOIN votes v ON v.idea_id = i.id
+         GROUP BY i.id
+         ORDER BY score DESC, vote_count DESC
+         LIMIT ${perPage} OFFSET ${offset}`
+      );
+    }
 
-  return new Response(JSON.stringify({ data: rows }), { status: 200 });
+    return new Response(JSON.stringify({ data: rows }), { status: 200 });
+  } catch (err: any) {
+    // Common in local dev when MySQL isn't running or DB_* env vars point to an unreachable host.
+    console.error('Error in GET /api/ideas:', err && err.stack ? err.stack : err);
+    const code = err?.code ? String(err.code) : '';
+    const status =
+      code === 'ETIMEDOUT' || code === 'ECONNREFUSED' || code === 'ENOTFOUND' ? 503 : 500;
+    const message =
+      status === 503
+        ? 'Database unavailable. Start MySQL and verify DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME.'
+        : 'Internal server error';
+    return NextResponse.json({ error: message }, { status });
+  }
 }
 
 // In-memory rate limit map: ip -> [timestamps]

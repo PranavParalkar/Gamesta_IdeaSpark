@@ -1,6 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
 
 type EventItem = {
@@ -10,11 +18,116 @@ type EventItem = {
   ticketLimit?: number | null;
   ticketsSold?: number;
   remaining?: number | null;
+  createdAt?: string;
 };
+
+const ROTATION_RANGE = 32.5;
+const HALF_ROTATION_RANGE = ROTATION_RANGE / 2;
+
+function EventTiltCard({
+  event,
+  index,
+  onClick,
+}: {
+  event: EventItem;
+  index: number;
+  onClick: () => void;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const xSpring = useSpring(x, { stiffness: 200, damping: 20 });
+  const ySpring = useSpring(y, { stiffness: 200, damping: 20 });
+
+  const transform = useMotionTemplate`rotateX(${xSpring}deg) rotateY(${ySpring}deg)`;
+
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (!ref.current) return;
+
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    const mouseX = (e.clientX - rect.left) * ROTATION_RANGE;
+    const mouseY = (e.clientY - rect.top) * ROTATION_RANGE;
+
+    const rX = (mouseY / height - HALF_ROTATION_RANGE) * -1;
+    const rY = mouseX / width - HALF_ROTATION_RANGE;
+
+    x.set(rX);
+    y.set(rY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transformStyle: "preserve-3d",
+        transform,
+      }}
+      initial={{ opacity: 0, y: 25, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, delay: index * 0.04 }}
+      className="relative h-64 w-full rounded-2xl bg-gradient-to-br from-indigo-400/60 via-fuchsia-500/60 to-cyan-400/60 p-[1px] "
+      onClick={onClick}
+    >
+      <div
+        style={{
+          transform: "translateZ(60px)",
+          transformStyle: "preserve-3d",
+        }}
+        className="relative h-full w-full rounded-2xl bg-[#050816]/95 border border-white/10 overflow-hidden"
+      >
+        <div className="pointer-events-none absolute -right-16 -top-16 w-32 h-32 rounded-full bg-fuchsia-500/30 blur-2" />
+        <div className="pointer-events-none absolute -left-20 bottom-0 w-40 h-40 rounded-full bg-cyan-400/25 blur-2" />
+
+        <div className="relative flex h-full flex-col justify-between p-5">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-white/60">
+              <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
+                #{index + 1}
+              </span>
+              <span>Gamesta event</span>
+            </div>
+            <h2
+              style={{ transform: "translateZ(40px)" }}
+              className="mt-3 text-lg md:text-2xl font-semibold"
+            >
+              {event.name}
+            </h2>
+          </div>
+
+          <div className="flex items-center justify-between text-xs md:text-sm text-white/70">
+        
+            <span
+              style={{ transform: "translateZ(45px)" }}
+              className="hidden md:inline-flex text-[10px] uppercase tracking-[0.3em] text-cyan-300/90"
+            >
+              Click to open
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeEvent, setActiveEvent] = useState<EventItem | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;
@@ -39,10 +152,18 @@ export default function EventsPage() {
     };
   }, []);
 
+  const handleRegister = () => {
+    if (!activeEvent) {
+      router.push("/registrations");
+      return;
+    }
+    router.push(`/registrations?eventId=${activeEvent.id}`);
+  };
+
   return (
     <div className="min-h-screen w-full text-white relative overflow-hidden">
-      {/* 🌈 Energy Overlay */}
-      <div className="absolute inset-0 mix-blend-screen opacity-70 z-0">
+      {/* Neon energy background */}
+      <div className="absolute inset-0 mix-blend-screen opacity-70 z-0 pointer-events-none">
         <PrismaticBurst
           intensity={0.6}
           speed={0.6}
@@ -51,62 +172,110 @@ export default function EventsPage() {
         />
       </div>
 
-      <main className="max-w-5xl mt-24 mx-auto px-6 relative">
-        {/* Page Heading */}
-        <div className="relative z-10 text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
-            Events in Gamesta
-          </h1>
-        </div>
+      <main className="relative max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-16 z-10">
+    
 
-        {/* Timeline Items */}
-        <ul className="relative z-10 space-y-5 md:space-y-0 mt-10">
-          {/* Vertical line connecting all dots */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 via-purple-500 to-purple-800 hidden md:block" />
-
+        {/* Tilt card grid */}
+        <section className="mt-6">
           {loading && (
-            <div className="text-center text-white/70 py-10">Loading events…</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (
+                <div
+                  key={i}
+                  className="h-64 w-full rounded-2xl bg-white/5 animate-pulse"
+                />
+              ))}
+            </div>
           )}
 
           {!loading && events.length === 0 && (
-            <div className="text-center text-white/70 py-10">No events found.</div>
+            <div className="text-center text-white/70 py-10 glass rounded-2xl">
+              No events found right now. Check back soon.
+            </div>
           )}
 
-          {events.map((event, idx) => {
-            const isLeft = idx % 2 === 0;
-            return (
-              <motion.li
-                key={event.id ?? idx}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.05 }}
-                viewport={{ once: true }}
-                className={`relative flex flex-col md:flex-row items-center ${
-                  isLeft ? "md:justify-start" : "md:justify-end"
-                }`}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {!loading &&
+              events.map((event, idx) => (
+                <EventTiltCard
+                  key={event.id ?? idx}
+                  event={event}
+                  index={idx}
+                  onClick={() => setActiveEvent(event)}
+                />
+              ))}
+          </div>
+        </section>
+
+        {/* Popup modal for more info + register */}
+        <AnimatePresence>
+          {activeEvent && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+              onClick={() => setActiveEvent(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                transition={{ duration: 0.25 }}
+                className="relative w-full max-w-md rounded-3xl bg-[#050816]/95 border border-white/15 px-6 py-6 md:px-8 md:py-8 shadow-[0_0_40px_rgba(59,130,246,0.7)]"
+                onClick={(e) => e.stopPropagation()}
               >
-                {/* Connector Dot */}
-                <div className="absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 border-4 border-[#0d0d10] shadow-lg z-20" />
+                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-br from-fuchsia-500/40 via-purple-500/40 to-cyan-400/40 opacity-60 blur-sm -z-10" />
 
-                {/* Event Card */}
-                <div
-                  className={`w-full md:w-[45%] bg-[#1a0e1eb0] border border-[#2c2c38] rounded-2xl p-4 text-center font-semibold text-lg hover:bg-[#20202a] transition-all duration-300 backdrop-blur-sm shadow-lg
-                    ${
-                      isLeft
-                        ? "md:mr-auto md:translate-x-[-8%]"
-                        : "md:ml-auto md:translate-x-[8%]"
-                    }`}
-                >
-                  {event.name}
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                    {activeEvent.name}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setActiveEvent(null)}
+                    className="text-white/60 hover:text-white text-sm"
+                  >
+                    ✕
+                  </button>
                 </div>
-              </motion.li>
-            );
-          })}
-        </ul>
-      </main>
 
-      {/* 🪶 Small padding bottom for spacing */}
-      <div className="pb-5" />
+                <div className="space-y-3 text-sm md:text-base text-white/75">
+                  {activeEvent.createdAt && (
+                    <div className="text-xs text-white/60">
+                      Added on{" "}
+                      <span className="text-white">
+                        {new Date(activeEvent.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                  <p>
+                    This event is part of the{" "}
+                    <span className="text-fuchsia-300 font-medium">
+                      Gamesta
+                    </span>{" "}
+                    universe. If you&apos;re interested in joining, continue to
+                    the registration page where you&apos;ll see full pricing and
+                    ticket options.
+                  </p>
+                </div>
+
+                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={handleRegister}
+                    className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-500 to-cyan-400 text-sm md:text-base font-semibold  transition-all duration-300 hover:-translate-y-1.5"
+                  >
+                    Register for Events
+                  </button>
+
+           
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }

@@ -131,10 +131,11 @@ export default function Header() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link href="/login">
-              <button className="text-sm font-medium text-black bg-gradient-to-r from-pink-400 to-purple-400 px-4 py-2 rounded-full hover:opacity-90 transition">
-                Sign In
-              </button>
+            <Link 
+              href="/login"
+              className="text-sm font-medium text-black bg-gradient-to-r from-pink-400 to-purple-400 px-4 py-2 rounded-full hover:opacity-90 transition inline-block"
+            >
+              Sign In
             </Link>
           )}
 
