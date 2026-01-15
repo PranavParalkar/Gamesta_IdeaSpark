@@ -28,10 +28,12 @@ function EventTiltCard({
   event,
   index,
   onClick,
+  image,
 }: {
   event: EventItem;
   index: number;
   onClick: () => void;
+  image: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -89,19 +91,19 @@ function EventTiltCard({
         }}
         className="relative h-full w-full rounded-2xl bg-[#050816]/95 border border-white/10 overflow-hidden"
       >
-        {/* Background image */}
-<div
-  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-30"
-  style={{
-    backgroundImage: "url('/event_background.png')",
-  }}
-/>
+        {/* Background image from event */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-60"
+          style={{
+            backgroundImage: `url('${image}')`,
+          }}
+        />
 
-{/* Optional overlay for better text contrast */}
-<div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/40" />
-
+        {/* Optional overlay for better text contrast */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+{/* 
         <div className="pointer-events-none absolute -right-16 -top-16 w-32 h-32 rounded-full bg-fuchsia-500/30 blur-2" />
-        <div className="pointer-events-none absolute -left-20 bottom-0 w-40 h-40 rounded-full bg-cyan-400/25 blur-2" />
+        <div className="pointer-events-none absolute -left-20 bottom-0 w-40 h-40 rounded-full bg-cyan-400/25 blur-2" /> */}
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div>
@@ -135,32 +137,152 @@ function EventTiltCard({
 }
 
 export default function EventsPage() {
+  // Hardcoded events with images - matching home page items
+  const hardcodedEvents: EventItem[] = [
+    {
+      id: 1,
+      name: 'BGMI Tournament',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 2,
+      name: 'Chess Tournament',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 3,
+      name: 'Dance Face-off',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 4,
+      name: 'Debate Contest',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 5,
+      name: 'Drone Race Competition',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 6,
+      name: 'Flying Simulator',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 7,
+      name: 'GSQ (Google Squid Games)',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 8,
+      name: 'Mobile Robocar Racing',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 9,
+      name: 'Photography Hunt',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 10,
+      name: 'Ramp Walk',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 11,
+      name: 'Strongest on Campus',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 12,
+      name: 'Valorant Tournament',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 13,
+      name: 'VR Experience',
+      price: 0,
+      ticketLimit: null,
+      ticketsSold: 0,
+      remaining: null,
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  const eventImages: { [key: number]: string } = {
+    1: '/Event_Images/BGMI.png',
+    2: '/Event_Images/Chess.png',
+    3: '/Event_Images/Dance.png',
+    4: '/Event_Images/Debate.png',
+    5: '/Event_Images/Drone.png',
+    6: '/Event_Images/Flying.png',
+    7: '/Event_Images/Squid.png',
+    8: '/Event_Images/Robocar.png',
+    9: '/Event_Images/Photography.png',
+    10: '/Event_Images/Ramp.png',
+    11: '/Event_Images/Strongest.png',
+    12: '/Event_Images/Valo.png',
+    13: '/Event_Images/VR.png',
+  };
+
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeEvent, setActiveEvent] = useState<EventItem | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/events");
-        const json = await res.json().catch(() => ({}));
-        if (!mounted) return;
-        if (res.ok && Array.isArray(json?.data)) {
-          setEvents(json.data);
-        } else {
-          setEvents([]);
-        }
-      } catch {
-        if (mounted) setEvents([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
+    // Set hardcoded events immediately
+    setEvents(hardcodedEvents);
+    setLoading(false);
   }, []);
 
   const handleRegister = () => {
@@ -212,6 +334,7 @@ export default function EventsPage() {
                   key={event.id ?? idx}
                   event={event}
                   index={idx}
+                  image={eventImages[event.id as keyof typeof eventImages] || '/Event_Images/BGMI.png'}
                   onClick={() => setActiveEvent(event)}
                 />
               ))}
