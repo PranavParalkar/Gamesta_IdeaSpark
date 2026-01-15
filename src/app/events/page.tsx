@@ -89,6 +89,17 @@ function EventTiltCard({
         }}
         className="relative h-full w-full rounded-2xl bg-[#050816]/95 border border-white/10 overflow-hidden"
       >
+        {/* Background image */}
+<div
+  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-30"
+  style={{
+    backgroundImage: "url('/event_background.png')",
+  }}
+/>
+
+{/* Optional overlay for better text contrast */}
+<div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/40" />
+
         <div className="pointer-events-none absolute -right-16 -top-16 w-32 h-32 rounded-full bg-fuchsia-500/30 blur-2" />
         <div className="pointer-events-none absolute -left-20 bottom-0 w-40 h-40 rounded-full bg-cyan-400/25 blur-2" />
 

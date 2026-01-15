@@ -293,23 +293,6 @@ export default function LoginPage() {
                 <span>Sign in with Google</span>
               </button>
             </div>
-            {/* Mobile switch to Register */}
-<div className="mt-4 text-center md:hidden">
-  <p className="text-sm text-white/70">
-    Don&apos;t have an account?
-  </p>
-  <button
-    type="button"
-    onClick={() => {
-      setIsRegisterMode(true);
-      setError(null);
-    }}
-    className="mt-2 text-fuchsia-400 font-semibold underline"
-  >
-    Sign Up
-  </button>
-</div>
-
           </form>
         </div>
 
@@ -500,23 +483,6 @@ export default function LoginPage() {
                 <span>Sign up with Google</span>
               </button>
             </div>
-            {/* Mobile switch to Login */}
-<div className="mt-4 text-center md:hidden">
-  <p className="text-sm text-white/70">
-    Already have an account?
-  </p>
-  <button
-    type="button"
-    onClick={() => {
-      setIsRegisterMode(false);
-      setError(null);
-    }}
-    className="mt-2 text-fuchsia-400 font-semibold underline"
-  >
-    Sign In
-  </button>
-</div>
-
           </form>
         </div>
 

@@ -15,8 +15,90 @@ import ParticleField from "../components/ui/ParticleField";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
 import Sparkline from "../components/ui/Sparkline";
 import ChatBot from "../components/ChatBot";
+import InfiniteMenu from '../components/InfiniteMenu'
 
 export default function Home() {
+  const items = [
+  {
+    image: '/Event_Images/BGMI.png',
+    link: '/events',
+    title: 'BGMI Tournament',
+    description: 'Compete in an intense BGMI battle and prove your squad\'s dominance.'
+  },
+  {
+    image: '/Event_Images/Chess.png',
+    link: '/events',
+    title: 'Chess Tournament',
+    description: 'Test your strategy and intellect in a competitive chess showdown.'
+  },
+  {
+    image: '/Event_Images/Dance.png',
+    link: '/events',
+    title: 'Dance Face-off',
+    description: 'Show your moves and energy in a high-voltage dance battle.'
+  },
+  {
+    image: '/Event_Images/Debate.png',
+    link: '/events',
+    title: 'Debate Contest',
+    description: 'Put your speaking skills and logical thinking to the test.'
+  },
+  {
+    image: '/Event_Images/Drone.png',
+    link: '/events',
+    title: 'Drone Race Competition',
+    description: 'Experience speed and precision in an adrenaline-filled drone race.'
+  },
+  {
+    image: '/Event_Images/Flying.png',
+    link: '/events',
+    title: 'Flying Simulator',
+    description: 'Get hands-on experience with realistic flight simulation.'
+  },
+  {
+    image: '/Event_Images/Squid.png',
+    link: '/events',
+    title: 'GSQ (Google Squid Games)',
+    description: 'Fun, thrilling challenges inspired by Google and Squid Games.'
+  },
+  {
+    image: '/Event_Images/Robocar.png',
+    link: '/events',
+    title: 'Mobile Robocar Racing',
+    description: 'Race your robocar and compete for the fastest finish.'
+  },
+  {
+    image: '/Event_Images/Photography.png',
+    link: '/events',
+    title: 'Photography Hunt',
+    description: 'Capture creativity and complete exciting photography challenges.'
+  },
+  {
+    image: '/Event_Images/Ramp.png',
+    link: '/events',
+    title: 'Ramp Walk',
+    description: 'Walk the ramp with confidence and style.'
+  },
+  {
+    image: '/Event_Images/Strongest.png',
+    link: '/events',
+    title: 'Strongest on Campus',
+    description: 'Showcase your strength and endurance in this power-packed event.'
+  },
+  {
+    image: '/Event_Images/Valo.png',
+    link: '/events',
+    title: 'Valorant Tournament',
+    description: 'Team up and dominate the battlefield in Valorant.'
+  },
+  {
+    image: '/Event_Images/VR.png',
+    link: '/events',
+    title: 'VR Experience',
+    description: 'Dive into immersive virtual reality experiences.'
+  }
+];
+
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Global animated background layers */}
@@ -31,7 +113,7 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center">
         {/* Hero Antigravity */}
         <div className="absolute inset-0 z-[1]">
-          <div className="w-full h-full">
+          <div className="hidden md:flex w-full h-full">
             <Antigravity
               count={350}
               magnetRadius={8}
@@ -57,21 +139,17 @@ export default function Home() {
         <GlowLines />
 
         {/* Hero content */}
-        <div className="relative z-20 mt-20 px-4 text-center space-y-8 max-w-4xl mx-auto">
+        <div className="relative z-20 mt-20 px-4 text-center space-y-0 max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md border border-fuchsia-500/40 text-xs uppercase tracking-[0.3em] text-fuchsia-200 shadow-[0_0_20px_rgba(255,94,200,0.4)]"
           >
-            <motion.span
-              className="w-2 h-2 rounded-full bg-emerald-400"
-              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span>Live at MITAOE</span>
+          
             <span className="text-white/50">·</span>
-            <span>College Fest Arena</span>
+            <span>Biggest fest at MITAOE</span>
+            <span className="text-white/50">·</span>
           </motion.div>
 
           <motion.div 
@@ -90,7 +168,7 @@ export default function Home() {
                 alt="Gamesta Logo"
                 width={600}
                 height={200}
-                className="w-auto h-24 sm:h-32 md:h-40 lg:h-64 object-contain drop-shadow-[0_0_40px_rgba(255,94,200,0.8)]"
+                className="w-auto h-64 sm:h-52 md:h-56 lg:h-96 object-contain drop-shadow-[0_0_40px_rgba(255,94,200,0.8)]"
                 priority
                 style={{
                   filter: 'drop-shadow(0 0 30px rgba(255, 94, 200, 0.6)) drop-shadow(0 0 60px rgba(147, 51, 234, 0.4))',
@@ -126,7 +204,7 @@ export default function Home() {
             />
           </motion.div> */}
 
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
@@ -154,7 +232,7 @@ export default function Home() {
                 Submit Your Idea
               </motion.button>
             </Link>
-          </motion.div>
+          </motion.div> */}
         </div>
       </section>
 
@@ -241,69 +319,11 @@ export default function Home() {
       </section>
 
       {/* STATS SECTION WITH ANIMATED BACKGROUND */}
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0">
-          <PrismaticBurst
-            intensity={0.4}
-            speed={0.8}
-            animationType="rotate3d"
-            colors={["#ff5ec8", "#8f5bff"]}
-            mixBlendMode="screen"
-          />
-          <GlowLines />
-        </div>
-        <div className="relative z-10 max-w-5xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card
-              transparent
-              className="bg-black/70 border border-white/20 backdrop-blur-xl shadow-[0_0_60px_rgba(255,94,200,0.3)]"
-            >
-              <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <CardTitle className="text-xl md:text-2xl mb-2 bg-gradient-to-r from-pink-400 to-fuchsia-400 bg-clip-text text-transparent">
-                    Gamesta in Motion
-                  </CardTitle>
-                  <p className="text-sm md:text-base text-white/60">
-                    Real-time pulse of campus creativity
-                  </p>
-                </div>
-                <div className="text-right text-sm md:text-base text-white/80">
-                  <div className="text-white/60">Idea submissions · last 7 days</div>
-                  <motion.div
-                    className="text-emerald-400 font-bold text-lg md:text-xl"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3, type: "spring" }}
-                  >
-                    +38% vs previous week
-                  </motion.div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Sparkline
-                    data={[2, 4, 3, 5, 4, 7, 9, 8, 10]}
-                    width={500}
-                    height={80}
-                    stroke="#22c55e"
-                    fill="rgba(34,197,94,0.2)"
-                  />
-                </motion.div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+      <section className="relative  overflow-hidden">
+    
+<div style={{ width: '100%', height: '600px', position: 'relative', overflow: 'hidden' }}>
+  <InfiniteMenu items={items}/>
+</div>
       </section>
 
       {/* HOW IT WORKS SECTION */}
