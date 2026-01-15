@@ -80,6 +80,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const [token, setToken] = useState<string | null>(null);
+
   // Data
   const [users, setUsers] = useState<User[]>([]);
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -89,7 +91,13 @@ export default function AdminPage() {
   // Queries
   const [searchQuery, setSearchQuery] = useState("");
 
-  const token = typeof window !== "undefined" ? sessionStorage.getItem("gamesta_token") : null;
+  useEffect(() => {
+    try {
+      setToken(sessionStorage.getItem("gamesta_token"));
+    } catch {
+      setToken(null);
+    }
+  }, []);
 
   const handleBack = () => {
     try {
