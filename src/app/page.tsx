@@ -421,8 +421,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Floating ChatBot */}
-      <ChatBot />
     </div>
   );
 }
