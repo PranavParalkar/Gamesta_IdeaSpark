@@ -139,10 +139,8 @@ export default function Home() {
   }, [paused, slides.length]);
 
   const paginate = (newDirection: number) => {
-    setIndex(([prev]) => [
-      (prev + newDirection + slides.length) % slides.length,
-      newDirection,
-    ]);
+    setDirection(newDirection);
+    setIndex((prev) => (prev + newDirection + slides.length) % slides.length);
   };
 
 
