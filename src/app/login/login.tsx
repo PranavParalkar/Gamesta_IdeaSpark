@@ -15,13 +15,43 @@ export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
+  const exchangeOAuthTokenAndRedirect = async () => {
+    try {
+      const res = await fetch('/api/auth/oauth-token');
+      if (!res.ok) return;
+      const json = await res.json();
+      sessionStorage.setItem('gamesta_token', json.token);
+      // Hard navigate to home with full refresh
+      if (typeof window !== 'undefined') window.location.assign('/');
+    } catch (e) {
+      console.error('OAuth exchange error', e);
+    }
+  };
+
+  const openCenteredPopup = (url: string) => {
+    const width = 520;
+    const height = 650;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2.5;
+    return window.open(
+      url,
+      'gamesta-google-oauth',
+      `popup=yes,width=${width},height=${height},left=${left},top=${top}`
+    );
+  };
+
   const handleGoogleAuth = () => {
-    const callbackUrl =
-      typeof window !== 'undefined'
-        ? encodeURIComponent(`${window.location.origin}/login?oauth=1`)
-        : encodeURIComponent('/login?oauth=1');
-    if (typeof window !== 'undefined') {
-      window.location.href = `/api/auth/signin/google?callbackUrl=${callbackUrl}`;
+    if (typeof window === 'undefined') return;
+
+    // Use a popup so the main tab doesn't navigate away.
+    // Note: Google blocks iframing; popup is the supported UX.
+    const callbackUrl = `${window.location.origin}/login?oauth=popup`;
+    const authUrl = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+
+    const popup = openCenteredPopup(authUrl);
+    if (!popup) {
+      // Popup blocked: fall back to full-page redirect.
+      window.location.href = authUrl;
     }
   };
 
@@ -30,25 +60,38 @@ export default function LoginPage() {
     try {
       const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
       const oauth = params.get('oauth');
-      if (oauth === '1') {
-        (async () => {
-          try {
-            const res = await fetch('/api/auth/oauth-token');
-            if (res.ok) {
-              const json = await res.json();
-              sessionStorage.setItem('gamesta_token', json.token);
-              // Hard navigate to home with full refresh
-              if (typeof window !== 'undefined') window.location.assign('/');
-            }
-          } catch (e) {
-            console.error('OAuth exchange error', e);
-          }
-        })();
+      if (oauth === '1') exchangeOAuthTokenAndRedirect();
+
+      // Popup flow: the OAuth callback lands here in the popup.
+      // Notify the opener to exchange the token, then close the popup.
+      if (oauth === 'popup') {
+        if (typeof window !== 'undefined' && window.opener && !window.opener.closed) {
+          window.opener.postMessage({ type: 'gamesta_oauth_complete' }, window.location.origin);
+          window.close();
+          return;
+        }
+
+        // Fallback: if this URL loaded in the main tab, just complete the exchange here.
+        exchangeOAuthTokenAndRedirect();
       }
     } catch (e) {
       console.error('Error parsing URL params', e);
     }
   }, [router]);
+
+  // Listen for the popup to complete OAuth, then exchange the session for our app token.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (!event.data || (event.data as any).type !== 'gamesta_oauth_complete') return;
+      exchangeOAuthTokenAndRedirect();
+    };
+
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
 
   // Preserved Auto-lookup name/email when PRN is entered
   useEffect(() => {
