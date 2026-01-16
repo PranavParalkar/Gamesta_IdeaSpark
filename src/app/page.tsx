@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "motion/react";
 import BlurText from "../components/ui/BlurText";
 import Antigravity from "./Antigravity";
 import PrismaticBurst from "../components/ui/PrismaticBurst";
@@ -16,6 +15,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card"
 import Sparkline from "../components/ui/Sparkline";
 import ChatBot from "../components/ChatBot";
 import InfiniteMenu from '../components/InfiniteMenu'
+
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const items = [
@@ -98,6 +100,53 @@ export default function Home() {
     description: 'Dive into immersive virtual reality experiences.'
   }
 ];
+
+  const slides = [
+  {
+    title: "Introducing Gamesta",
+    text: "Gamesta is the first-ever multi-club festival by the students of MIT Academy of Engineering, created to bring creativity, competition, and community spirit onto one vibrant stage."
+  },
+  {
+    title: "A Festival of Possibilities",
+    text: "Featuring 13 unique events organized by student clubs, Gamesta spans gaming, technology, sportsmanship, cultural arts, innovation, and skill-based challenges."
+  },
+  {
+    title: "Experience the Energy",
+    text: "From esports tournaments and robotics races to debates, dance showcases, drone competitions, and creative design contests, Gamesta offers something for everyone."
+  },
+  {
+    title: "More Than an Event",
+    text: "Gamesta is designed to engage a diverse audience while strengthening MITAOE’s reputation as a hub for talent, innovation, and student-led excellence."
+  },
+  {
+    title: "A Flagship Vision",
+    text: "With your support, Gamesta aims to become a flagship annual festival—one that MITAOE can proudly call its own."
+  }
+];
+
+   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused) return;
+
+    const interval = setInterval(() => {
+      setDirection(1);
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [paused, slides.length]);
+
+  const paginate = (newDirection: number) => {
+    setIndex(([prev]) => [
+      (prev + newDirection + slides.length) % slides.length,
+      newDirection,
+    ]);
+  };
+
+
+
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -239,12 +288,12 @@ export default function Home() {
       </section>
 
       {/* WHAT IS GAMESTA SECTION */}
-      <section className="relative z-10 overflow-hidden py-20 md:py-32 px-4 bg-black/80 backdrop-blur-sm lg:min-h-[70vh]">
+      <section className="relative z-10 overflow-hidden py-20 md:py-32  bg-black/80 backdrop-blur-sm lg:min-h-[70vh]">
         {/* Section background effects */}
-        <div className="absolute inset-0 overflow-hidden">
+        {/* <div className="absolute inset-0 overflow-hidden">
           <FloatingOrbs count={4} colors={["#8f5bff", "#ff5ec8"]} />
           <ParticleField count={30} colors={["#8f5bff", "#ff5ec8"]} />
-        </div>
+        </div> */}
 
         {/* Right-bleed hero media (large screens) */}
         <div
@@ -268,8 +317,8 @@ export default function Home() {
               </video>
 
               {/* Soft blends so it feels integrated (not boxed) */}
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/80" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(255,94,200,0.18),transparent_55%)]" />
+              {/* <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/80" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(255,94,200,0.18),transparent_55%)]" /> */}
             </div>
           </div>
         </div>
@@ -283,7 +332,7 @@ export default function Home() {
             className="grid gap-12 lg:grid-cols-2 items-center"
           >
             <div className="space-y-6 text-center lg:text-left lg:pr-10">
-              <div className="space-y-3">
+              <div className="space-y-3 text-center">
                 <p className="text-xs md:text-sm uppercase tracking-[0.35em] text-white/60">
                   What is
                 </p>
@@ -293,29 +342,126 @@ export default function Home() {
                 </h2>
               </div>
 
-              <p className="text-base md:text-lg text-white/80 mx-auto lg:mx-0 leading-relaxed max-w-xl">
-                We, the students of MIT Academy of Engineering, are excited to present Gamesta — our first-ever multi-club festival,
-                designed to bring together creativity, competition, and community spirit on one stage. This event will feature 13 unique 
-                Events organized by various student clubs, covering gaming, technology, sportsmanship, cultural arts, innovation,
-                and skill-based challenges.
-              </p>
+         <div className="relative overflow-hidden h-[220px]  md:h-[300px] max-w-3xl mx-auto">
+   <AnimatePresence mode="wait" custom={direction}>
+      <motion.div
+        key={index}
+        custom={direction}
+        initial={{
+          clipPath: "inset(100% 0% 0% 0%)",
+          rotateX: -15,
+          scale: 0.9,
+        }}
+        animate={{
+          clipPath: "inset(0% 0% 0% 0%)",
+          rotateX: 0,
+          scale: 1,
+        }}
+        exit={{
+          clipPath: "inset(0% 0% 100% 0%)",
+          rotateX: 15,
+          scale: 0.9,
+        }}
+        transition={{
+          duration: 0.9,
+          ease: [0.25, 1, 0.5, 1],
+        }}
+        className="
+          absolute inset-0 flex flex-col rounded-2xl border-2
+          justify-center items-center text-center px-6 p-12
+          perspective-[1200px] relative
+        "
+      >
+        {/* TITLE */}
+        <motion.h3
+          initial={{ y: 80 }}
+          animate={{ y: [80, 0, -6, 0] }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="
+            text-2xl md:text-3xl font-black mb-5
+            bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500
+            bg-[length:200%_200%]
+            bg-clip-text text-transparent
+            animate-gradient
+            drop-shadow-[0_0_35px_rgba(236,72,153,0.45)]
+          "
+        >
+          {slides[index].title}
+        </motion.h3>
 
-              <p className="text-base md:text-lg text-white/80 mx-auto lg:mx-0 leading-relaxed max-w-xl">
-                With events ranging from esports tournaments and robotics races to debates,
-                dance workshops, drone competitions, and creative design contests, Gamesta 
-                promises to engage a wide audience while enhancing the reputation of our 
-                institution as a hub for talent and innovation.We seek your kind permission
-                and support to make Gamesta a flagship annual event that MITAOE can be proud of.
-              </p>
+        {/* DESCRIPTION */}
+        <motion.p
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.25, duration: 0.7 }}
+          className="
+            text-lg md:text-xl text-white/80 max-w-2xl
+            leading-relaxed
+          "
+        >
+          {slides[index].text}
+        </motion.p>
 
-              <div className="pt-2">
+        {/* PULSE GLOW */}
+        <motion.div
+          animate={{
+            scale: [1, 1.08, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="
+            absolute -z-10 w-[450px] h-[450px]
+            rounded-full blur-3xl
+            bg-gradient-to-r from-pink-500/30 to-purple-600/30
+          "
+        />
+
+        {/* ⏸️ / ▶️ AUTOSLIDE TOGGLE BUTTON */}
+        <button
+          onClick={() => setPaused((p) => !p)}
+          className="
+            absolute bottom-4 right-4
+            w-9 h-9 rounded-full
+            flex items-center justify-center
+            bg-white/10 backdrop-blur-md
+            border border-white/20
+            text-white text-sm
+            hover:scale-110 hover:bg-white/20
+            transition-all duration-300
+          "
+          aria-label="Toggle autoplay"
+        >
+          {paused ? "▶" : "❚❚"}
+        </button>
+      </motion.div>
+    </AnimatePresence>
+
+
+      {/* Progress dots */}
+      {/* <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex([i, i > index ? 1 : -1])}
+            className={`h-2 w-2 rounded-full transition ${
+              i === index ? "bg-pink-400 scale-125" : "bg-white/40"
+            }`}
+          />
+        ))}
+      </div> */}
+    </div>
+              <div className="pt-2 items-center justify-center flex">
                 <Link href="/registrations">
                   <motion.button
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-sm text-white font-semibold shadow-[0_0_30px_rgba(184,255,44,0.18)]"
                   >
-                    Don’t wait anymore — Register Now
+                    Don’t wait anymore  Register Now
                   </motion.button>
                 </Link>
               </div>
@@ -351,7 +497,7 @@ export default function Home() {
       {/* STATS SECTION WITH ANIMATED BACKGROUND */}
       <section className="relative  overflow-hidden">
     
-<div className="w-full h-[400px] lg:h-[700px] relative overflow-hidden">
+<div className="w-full h-[400px] rounded-full lg:h-[700px] relative overflow-hidden">
   <InfiniteMenu items={items} />
 </div>
 
