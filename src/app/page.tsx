@@ -239,80 +239,112 @@ export default function Home() {
       </section>
 
       {/* WHAT IS GAMESTA SECTION */}
-      <section className="relative z-10 py-20 md:py-32 px-4 bg-black/80 backdrop-blur-sm">
+      <section className="relative z-10 overflow-hidden py-20 md:py-32 px-4 bg-black/80 backdrop-blur-sm lg:min-h-[70vh]">
         {/* Section background effects */}
         <div className="absolute inset-0 overflow-hidden">
           <FloatingOrbs count={4} colors={["#8f5bff", "#ff5ec8"]} />
           <ParticleField count={30} colors={["#8f5bff", "#ff5ec8"]} />
         </div>
 
-        <div className="relative z-10 max-w-6xl mx-auto space-y-12">
+        {/* Right-bleed hero media (large screens) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-1/2 right-0 z-[2] hidden lg:block"
+        >
+          <div className="absolute inset-y-0 left-0 right-[-6vw] flex items-center justify-end">
+            <div
+              className="relative h-[min(62vh,560px)] w-[min(62vw,980px)] origin-right overflow-hidden"
+              style={{ transform: "translateY(0) scale(1)" }}
+            >
+              <video
+                className="h-full w-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+              >
+                <source src="/anim_1.mp4" type="video/mp4" />
+              </video>
+
+              {/* Soft blends so it feels integrated (not boxed) */}
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/80" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(255,94,200,0.18),transparent_55%)]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6 }}
-            className="text-center space-y-4"
+            className="grid gap-12 lg:grid-cols-2 items-center"
           >
-            <BlurText
-              text="What is Gamesta?"
-              delay={100}
-              animateBy="words"
-              direction="top"
-              className="text-3xl md:text-4xl font-bold justify-center text-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text "
-            />
-            <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
-              A gamified platform where your college fest ideas become quests,
-              and the crowd decides what goes live on stage.
-            </p>
+            <div className="space-y-6 text-center lg:text-left lg:pr-10">
+              <div className="space-y-3">
+                <p className="text-xs md:text-sm uppercase tracking-[0.35em] text-white/60">
+                  What is
+                </p>
+                <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold leading-[0.9] tracking-tight">
+                  <span className="text-[#b8ff2c] italic">Gamesta</span>
+                  <span className="text-white/80">?</span>
+                </h2>
+              </div>
+
+              <p className="text-base md:text-lg text-white/80 mx-auto lg:mx-0 leading-relaxed max-w-xl">
+                We, the students of MIT Academy of Engineering, are excited to present Gamesta — our first-ever multi-club festival,
+                designed to bring together creativity, competition, and community spirit on one stage. This event will feature 13 unique 
+                Events organized by various student clubs, covering gaming, technology, sportsmanship, cultural arts, innovation,
+                and skill-based challenges.
+              </p>
+
+              <p className="text-base md:text-lg text-white/80 mx-auto lg:mx-0 leading-relaxed max-w-xl">
+                With events ranging from esports tournaments and robotics races to debates,
+                dance workshops, drone competitions, and creative design contests, Gamesta 
+                promises to engage a wide audience while enhancing the reputation of our 
+                institution as a hub for talent and innovation.We seek your kind permission
+                and support to make Gamesta a flagship annual event that MITAOE can be proud of.
+              </p>
+
+              <div className="pt-2">
+                <Link href="/registrations">
+                  <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-sm text-white font-semibold shadow-[0_0_30px_rgba(184,255,44,0.18)]"
+                  >
+                    Don’t wait anymore — Register Now
+                  </motion.button>
+                </Link>
+              </div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20, scale: 0.98 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+              className="w-full lg:hidden"
+            >
+              <div className="relative w-full h-[320px] sm:h-[380px] overflow-hidden">
+                <video
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                >
+                  <source src="/anim_1.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/70" />
+              </div>
+            </motion.div>
           </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                title: "Idea Arena",
-                desc: "Drop your wildest fest ideas — new events, twists on classics, or completely experimental formats. The arena is open 24/7.",
-                icon: "💡",
-                gradient: "from-pink-500/20 to-fuchsia-500/20",
-              },
-              {
-                title: "Live Voting Engine",
-                desc: "Students upvote ideas they love. Gamesta turns that into live leaderboards so coordinators instantly see what the crowd wants.",
-                icon: "⚡",
-                gradient: "from-purple-500/20 to-pink-500/20",
-              },
-              {
-                title: "Events & Rewards",
-                desc: "Ideas that win become real events. Earn reputation, climb the leaderboard, and showcase your name across the fest.",
-                icon: "🏆",
-                gradient: "from-fuchsia-500/20 to-purple-500/20",
-              },
-            ].map((feature, idx) => (
-              <div
-                key={feature.title}
-                
-              >
-                <Card
-                  transparent
-                  hover
-                  className={`bg-gradient-to-br ${feature.gradient} border border-white/20 backdrop-blur-md relative overflow-hidden group`}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 via-fuchsia-500/0 to-purple-500/0 group-hover:from-pink-500/10 group-hover:via-fuchsia-500/10 group-hover:to-purple-500/10 transition-all duration-500" />
-                  <CardHeader className="relative z-10">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">{feature.icon}</span>
-                      <CardTitle className="text-white text-xl">
-                        {feature.title}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative z-10 text-sm text-white/80 leading-relaxed">
-                    {feature.desc}
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
