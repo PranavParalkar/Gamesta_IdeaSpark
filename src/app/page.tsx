@@ -133,10 +133,12 @@ export default function Home() {
             />
           </div>
         </div>
+        <div className="hidden md:flex">
 
         {/* Pulse rings in hero */}
-        <PulseRings count={4} size={500} color="#ff5ec8" />
+        <PulseRings  count={4} size={500} color="#ff5ec8" />
         <GlowLines />
+        </div>
 
         {/* Hero content */}
         <div className="relative z-20 mt-20 px-4 text-center space-y-0 max-w-4xl mx-auto">
@@ -257,7 +259,7 @@ export default function Home() {
               delay={100}
               animateBy="words"
               direction="top"
-              className="text-3xl md:text-4xl font-bold justify-center bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent"
+              className="text-3xl md:text-4xl font-bold justify-center text-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text "
             />
             <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
               A gamified platform where your college fest ideas become quests,
@@ -286,13 +288,9 @@ export default function Home() {
                 gradient: "from-fuchsia-500/20 to-purple-500/20",
               },
             ].map((feature, idx) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                
               >
                 <Card
                   transparent
@@ -312,7 +310,7 @@ export default function Home() {
                     {feature.desc}
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -321,7 +319,7 @@ export default function Home() {
       {/* STATS SECTION WITH ANIMATED BACKGROUND */}
       <section className="relative  overflow-hidden">
     
-<div style={{ width: '100%', height: '600px', position: 'relative', overflow: 'hidden' }}>
+<div style={{ width: '100%', height: '400px', position: 'relative', overflow: 'hidden' }}>
   <InfiniteMenu items={items}/>
 </div>
       </section>
@@ -329,7 +327,7 @@ export default function Home() {
       {/* HOW IT WORKS SECTION */}
       <section className="relative z-10 py-20 md:py-32 px-4 bg-black/90">
         {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute hidden md:flex inset-0 overflow-hidden">
           <AnimatedGrid />
           <PulseRings count={3} size={600} color="#8f5bff" />
         </div>
@@ -347,7 +345,7 @@ export default function Home() {
               delay={100}
               animateBy="words"
               direction="top"
-              className="text-3xl md:text-4xl font-bold justify-center bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text text-transparent"
+              className="text-3xl md:text-4xl font-bold justify-center bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 bg-clip-text "
             />
             <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
               Three simple steps to turn your ideas into packed auditoriums.
@@ -375,13 +373,9 @@ export default function Home() {
                 color: "#00f6ff",
               },
             ].map((item, idx) => (
-              <motion.div
+              <div
                 key={item.label}
-                initial={{ opacity: 0, y: 40, rotateX: -15 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6, delay: idx * 0.15 }}
-                whileHover={{ y: -12, scale: 1.03 }}
+               
                 className="relative"
               >
                 <Card
@@ -417,7 +411,7 @@ export default function Home() {
                     {item.text}
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
 
