@@ -319,9 +319,10 @@ export default function Home() {
       {/* STATS SECTION WITH ANIMATED BACKGROUND */}
       <section className="relative  overflow-hidden">
     
-<div style={{ width: '100%', height: '400px', position: 'relative', overflow: 'hidden' }}>
-  <InfiniteMenu items={items}/>
+<div className="w-full h-[400px] lg:h-[700px] relative overflow-hidden">
+  <InfiniteMenu items={items} />
 </div>
+
       </section>
 
       {/* HOW IT WORKS SECTION */}
