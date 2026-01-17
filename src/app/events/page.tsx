@@ -10,6 +10,8 @@ import {
   useSpring,
 } from "framer-motion";
 import PrismaticBurst from "../../components/ui/PrismaticBurst";
+import AnimatedGrid from "@/components/ui/AnimatedGrid";
+import ParticleField from "@/components/ui/ParticleField";
 
 type EventItem = {
   id: number;
@@ -351,7 +353,7 @@ export default function EventsPage() {
         </section>
 
         {/* Popup modal for more info + register */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {activeEvent && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -417,7 +419,156 @@ export default function EventsPage() {
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
+        {/* FULL SCREEN VALORANT EVENT MODAL */}
+<AnimatePresence>
+  {activeEvent?.name === "Valorant Tournament" && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#070711]"
+    >
+      {/* ================= BACKGROUND LAYERS ================= */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Soft gradient base */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#120c2e] via-[#070711] to-[#04131a]" />
+
+    
+
+        {/* Subtle grain */}
+        <div className="absolute inset-0 opacity-[0.04] bg-noise" />
+      </div>
+
+      <div className="relative text-white">
+        {/* ================= HERO ================= */}
+        <section className="relative min-h-screen flex items-center px-6">
+          <div className="max-w-6xl mx-auto items-center">
+            {/* Left */}
+            <motion.div
+              initial={{ x: -80, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative mx-auto text-center"
+            >
+              <span className="inline-block mb-6 text-sm tracking-widest text-fuchsia-400 uppercase">
+                Gamesta presents
+              </span>
+
+              <h1 className="text-6xl md:text-7xl font-black leading-tight">
+                <span className="block text-white">Valorant</span>
+                <span className="block bg-gradient-to-r from-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                  Tournament
+                </span>
+              </h1>
+
+              <p className="mt-6 text-lg text-white/70 max-w-xl">
+                A multi-stage competitive Valorant experience — from online
+                knockouts to a high-stakes LAN finale on campus.
+              </p>
+
+              <div className="mt-10 flex gap-4 items-center justify-center">
+                <button
+                  onClick={handleRegister}
+                  className="px-8 py-4 bg-white text-black font-semibold rounded-lg hover:-translate-y-1 transition"
+                >
+                  Register
+                </button>
+                <button className="px-8 py-4 border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition">
+                  View Rules
+                </button>
+              </div>
+            </motion.div>
+       
+          </div>
+
+          {/* Close */}
+          <button
+            onClick={() => setActiveEvent(null)}
+                    className="absolute top-16 border-2 p-2 rounded-full right-8 text-white/60 hover:text-white"
+          >
+            ✕
+          </button>
+        </section>
+
+        {/* ================= PHASES ================= */}
+        <section className="relative max-w-6xl mx-auto px-6 py-40 space-y-40">
+          {[
+            {
+              n: "01",
+              title: "Team Formation",
+              date: "14 Jan – 31 Jan, The team registrations will start from 1 Feb Onwards.",
+              color: "from-fuchsia-400 to-purple-500",
+              text:
+                "The team is very important for winning a tournament. If you do, start practicing. If you don't, we got you. Gamesta discord will be a hub for players finding the best fit players as per their team. You will assign roles to yourself i.e Duelist, Controller etc and search among the Voice channels from the Gamesta Discord.",
+            },
+            {
+              n: "02",
+              title: "Online Knockouts",
+              date: "6 Weeks · Weekends",
+              color: "from-purple-400 to-cyan-400",
+              text:
+                "All registered teams will be placed in Randomized Brackets. The format of the Online Phase purely knock outs in Competitive format. Singular Map will be selected with the map poll.These will continue for a total of 6 weeks and the matches will be scheduled around the weekends. Player can play from Home or Gamesta-collaborated Gaming Cafe's.8 finalist team will move forward to the next phase.",
+            },
+            {
+              n: "03",
+              title: "LAN Grand Finale",
+              date: "MITAOE Campus",
+              color: "from-cyan-400 to-fuchsia-400",
+              text:
+                "All the Shortlisted team will be competing in Campus for the Final Showdown. LAN phase will have three stages , Quarter's , Semi's and the Finals on campus of MIT Academy of Engineering, Alandi.",
+            },
+          ].map((p, i) => (
+            <motion.div
+              key={p.n}
+              initial={{ y: 120, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative grid md:grid-cols-[120px_1fr] gap-12"
+            >
+              {/* Number */}
+              <div className="text-7xl font-black text-white/10">
+                {p.n}
+              </div>
+
+              {/* Content */}
+              <div>
+                <h3 className="text-4xl font-bold mb-3">{p.title}</h3>
+                <div
+                  className={`h-1 w-24 mb-6 bg-gradient-to-r ${p.color}`}
+                />
+                <p className="text-sm uppercase tracking-widest text-white/40 mb-6">
+                  {p.date}
+                </p>
+                <p className="text-lg text-white/70 max-w-2xl">
+                  {p.text}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </section>
+
+        {/* ================= CTA ================= */}
+        <section className="relative py-32 flex justify-center">
+          <motion.button
+            whileHover={{ y: -6 }}
+            transition={{ type: "spring", stiffness: 160 }}
+            onClick={handleRegister}
+            className="relative px-16 py-5 text-lg font-semibold rounded-xl bg-gradient-to-r from-fuchsia-400 to-cyan-400 text-black"
+          >
+            Register Your Team
+          </motion.button>
+        </section>
+
+        <div className="h-32" />
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+
+
       </main>
     </div>
   );
