@@ -279,6 +279,15 @@ export default function EventsPage() {
   const [activeEvent, setActiveEvent] = useState<EventItem | null>(null);
   const router = useRouter();
 
+  const openEvent = (event: EventItem) => {
+    const name = String(event?.name || "").toLowerCase();
+    if (name.includes("valorant")) {
+      router.push("/events/valorant");
+      return;
+    }
+    setActiveEvent(event);
+  };
+
   useEffect(() => {
     // Set hardcoded events immediately
     setEvents(hardcodedEvents);
@@ -335,7 +344,7 @@ export default function EventsPage() {
                   event={event}
                   index={idx}
                   image={eventImages[event.id as keyof typeof eventImages] || '/Event_Images/BGMI.png'}
-                  onClick={() => setActiveEvent(event)}
+                  onClick={() => openEvent(event)}
                 />
               ))}
           </div>

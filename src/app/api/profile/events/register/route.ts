@@ -10,6 +10,14 @@ type RegisterBody = {
   orderId?: string;
 };
 
+const VALORANT_EVENT_NAME = 'Valorant Tournament';
+
+function isBeforeValorantRegistrationOpen(now: Date): boolean {
+  // Lock until Feb 1st (server local time), based on current year.
+  const unlockAt = new Date(now.getFullYear(), 1, 1, 0, 0, 0);
+  return now < unlockAt;
+}
+
 export async function POST(req: NextRequest) {
   try {
     assertSameOriginOrThrow(req);
@@ -38,6 +46,17 @@ export async function POST(req: NextRequest) {
     const uniqueEvents = Array.from(new Set(events));
     if (uniqueEvents.length === 0) {
       return NextResponse.json({ error: 'Select at least one event' }, { status: 400 });
+    }
+
+    // Server-side registration lock for Valorant until Feb 1.
+    if (uniqueEvents.some((e) => String(e).toLowerCase() === VALORANT_EVENT_NAME.toLowerCase())) {
+      const now = new Date();
+      if (isBeforeValorantRegistrationOpen(now)) {
+        return NextResponse.json(
+          { error: 'Valorant team registrations open on Feb 1. Please try again later.' },
+          { status: 403 },
+        );
+      }
     }
     if (!paymentId || !orderId) {
       return NextResponse.json({ error: 'Missing payment details' }, { status: 400 });
