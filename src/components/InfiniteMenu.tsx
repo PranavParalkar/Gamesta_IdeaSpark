@@ -451,24 +451,37 @@ class ArcballControl {
     this._rotationVelocity = 0;
     this._combinedQuat = quat.create();
 
-    canvas.addEventListener('pointerdown', e => {
+    this._onPointerDown = e => {
       vec2.set(this.pointerPos, e.clientX, e.clientY);
       vec2.copy(this.previousPointerPos, this.pointerPos);
       this.isPointerDown = true;
-    });
-    canvas.addEventListener('pointerup', () => {
+    };
+    this._onPointerUp = () => {
       this.isPointerDown = false;
-    });
-    canvas.addEventListener('pointerleave', () => {
+    };
+    this._onPointerLeave = () => {
       this.isPointerDown = false;
-    });
-    canvas.addEventListener('pointermove', e => {
+    };
+    this._onPointerMove = e => {
       if (this.isPointerDown) {
         vec2.set(this.pointerPos, e.clientX, e.clientY);
       }
-    });
+    };
+
+    canvas.addEventListener('pointerdown', this._onPointerDown);
+    canvas.addEventListener('pointerup', this._onPointerUp);
+    canvas.addEventListener('pointerleave', this._onPointerLeave);
+    canvas.addEventListener('pointermove', this._onPointerMove);
 
     canvas.style.touchAction = 'none';
+  }
+
+  destroy() {
+    if (!this.canvas) return;
+    this.canvas.removeEventListener('pointerdown', this._onPointerDown);
+    this.canvas.removeEventListener('pointerup', this._onPointerUp);
+    this.canvas.removeEventListener('pointerleave', this._onPointerLeave);
+    this.canvas.removeEventListener('pointermove', this._onPointerMove);
   }
 
   update(deltaTime, targetFrameDuration = 16) {
@@ -577,6 +590,8 @@ class InfiniteGridMenu {
   #deltaTime = 0;
   #deltaFrames = 0;
   #frames = 0;
+  #rafId = null;
+  #disposed = false;
 
   camera = {
     matrix: mat4.create(),
@@ -609,21 +624,22 @@ class InfiniteGridMenu {
   }
 
   resize() {
-    const parent = this.canvas.parentElement;
-    if (parent) {
-      this.canvas.width = parent.clientWidth;
-      this.canvas.height = parent.clientHeight;
-    }
-    
-    this.viewportSize = vec2.set(this.viewportSize || vec2.create(), this.canvas.clientWidth, this.canvas.clientHeight);
+    if (!this.gl) return;
+
+    resizeCanvasToDisplaySize(this.canvas);
+    this.viewportSize = vec2.set(
+      this.viewportSize || vec2.create(),
+      this.canvas.clientWidth,
+      this.canvas.clientHeight
+    );
 
     const gl = this.gl;
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
     this.#updateProjectionMatrix(gl);
   }
 
   run(time = 0) {
+    if (this.#disposed) return;
     this.#deltaTime = Math.min(32, time - this.#time);
     this.#time = time;
     this.#deltaFrames = this.#deltaTime / this.TARGET_FRAME_DURATION;
@@ -632,7 +648,24 @@ class InfiniteGridMenu {
     this.#animate(this.#deltaTime);
     this.#render();
 
-    requestAnimationFrame(t => this.run(t));
+    this.#rafId = requestAnimationFrame(t => this.run(t));
+  }
+
+  destroy() {
+    this.#disposed = true;
+    if (this.#rafId != null) {
+      cancelAnimationFrame(this.#rafId);
+      this.#rafId = null;
+    }
+    if (this.control?.destroy) {
+      this.control.destroy();
+    }
+    if (this._resizeObserver) {
+      try {
+        this._resizeObserver.disconnect();
+      } catch {}
+      this._resizeObserver = null;
+    }
   }
 
   #init(onInit) {
@@ -693,6 +726,12 @@ class InfiniteGridMenu {
     this.#updateCameraMatrix();
     this.#updateProjectionMatrix(gl);
     this.resize();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this._resizeObserver = new ResizeObserver(() => this.resize());
+      const target = this.canvas.parentElement || this.canvas;
+      this._resizeObserver.observe(target);
+    }
 
     if (onInit) onInit(this);
   }
@@ -986,6 +1025,9 @@ export default function InfiniteMenu({ items = [], scale = 1.0 }: InfiniteMenuPr
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (sketch?.destroy) {
+        sketch.destroy();
+      }
     };
   }, [items, scale]);
 

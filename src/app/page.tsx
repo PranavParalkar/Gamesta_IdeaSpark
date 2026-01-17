@@ -18,87 +18,89 @@ import InfiniteMenu from '../components/InfiniteMenu'
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Home() {
-  const items = [
+const HOME_INFINITE_MENU_ITEMS = [
   {
-    image: '/Event_Images/BGMI.png',
-    link: '/events',
-    title: 'BGMI Tournament',
-    description: 'Compete in an intense BGMI battle and prove your squad\'s dominance.'
+    image: "/Event_Images/BGMI.png",
+    link: "/events",
+    title: "BGMI Tournament",
+    description: "Compete in an intense BGMI battle and prove your squad's dominance.",
   },
   {
-    image: '/Event_Images/Chess.png',
-    link: '/events',
-    title: 'Chess Tournament',
-    description: 'Test your strategy and intellect in a competitive chess showdown.'
+    image: "/Event_Images/Chess.png",
+    link: "/events",
+    title: "Chess Tournament",
+    description: "Test your strategy and intellect in a competitive chess showdown.",
   },
   {
-    image: '/Event_Images/Dance.png',
-    link: '/events',
-    title: 'Dance Face-off',
-    description: 'Show your moves and energy in a high-voltage dance battle.'
+    image: "/Event_Images/Dance.png",
+    link: "/events",
+    title: "Dance Face-off",
+    description: "Show your moves and energy in a high-voltage dance battle.",
   },
   {
-    image: '/Event_Images/Debate.png',
-    link: '/events',
-    title: 'Debate Contest',
-    description: 'Put your speaking skills and logical thinking to the test.'
+    image: "/Event_Images/Debate.png",
+    link: "/events",
+    title: "Debate Contest",
+    description: "Put your speaking skills and logical thinking to the test.",
   },
   {
-    image: '/Event_Images/Drone.png',
-    link: '/events',
-    title: 'Drone Race Competition',
-    description: 'Experience speed and precision in an adrenaline-filled drone race.'
+    image: "/Event_Images/Drone.png",
+    link: "/events",
+    title: "Drone Race Competition",
+    description: "Experience speed and precision in an adrenaline-filled drone race.",
   },
   {
-    image: '/Event_Images/Flying.png',
-    link: '/events',
-    title: 'Flying Simulator',
-    description: 'Get hands-on experience with realistic flight simulation.'
+    image: "/Event_Images/Flying.png",
+    link: "/events",
+    title: "Flying Simulator",
+    description: "Get hands-on experience with realistic flight simulation.",
   },
   {
-    image: '/Event_Images/Squid.png',
-    link: '/events',
-    title: 'GSQ (Google Squid Games)',
-    description: 'Fun, thrilling challenges inspired by Google and Squid Games.'
+    image: "/Event_Images/Squid.png",
+    link: "/events",
+    title: "GSQ (Google Squid Games)",
+    description: "Fun, thrilling challenges inspired by Google and Squid Games.",
   },
   {
-    image: '/Event_Images/Robocar.png',
-    link: '/events',
-    title: 'Mobile Robocar Racing',
-    description: 'Race your robocar and compete for the fastest finish.'
+    image: "/Event_Images/Robocar.png",
+    link: "/events",
+    title: "Mobile Robocar Racing",
+    description: "Race your robocar and compete for the fastest finish.",
   },
   {
-    image: '/Event_Images/Photography.png',
-    link: '/events',
-    title: 'Photography Hunt',
-    description: 'Capture creativity and complete exciting photography challenges.'
+    image: "/Event_Images/Photography.png",
+    link: "/events",
+    title: "Photography Hunt",
+    description: "Capture creativity and complete exciting photography challenges.",
   },
   {
-    image: '/Event_Images/Ramp.png',
-    link: '/events',
-    title: 'Ramp Walk',
-    description: 'Walk the ramp with confidence and style.'
+    image: "/Event_Images/Ramp.png",
+    link: "/events",
+    title: "Ramp Walk",
+    description: "Walk the ramp with confidence and style.",
   },
   {
-    image: '/Event_Images/Strongest.png',
-    link: '/events',
-    title: 'Strongest on Campus',
-    description: 'Showcase your strength and endurance in this power-packed event.'
+    image: "/Event_Images/Strongest.png",
+    link: "/events",
+    title: "Strongest on Campus",
+    description: "Showcase your strength and endurance in this power-packed event.",
   },
   {
-    image: '/Event_Images/Valo.png',
-    link: '/events',
-    title: 'Valorant Tournament',
-    description: 'Team up and dominate the battlefield in Valorant.'
+    image: "/Event_Images/Valo.png",
+    link: "/events",
+    title: "Valorant Tournament",
+    description: "Team up and dominate the battlefield in Valorant.",
   },
   {
-    image: '/Event_Images/VR.png',
-    link: '/events',
-    title: 'VR Experience',
-    description: 'Dive into immersive virtual reality experiences.'
-  }
+    image: "/Event_Images/VR.png",
+    link: "/events",
+    title: "VR Experience",
+    description: "Dive into immersive virtual reality experiences.",
+  },
 ];
+
+export default function Home() {
+  const items = HOME_INFINITE_MENU_ITEMS;
 
   const slides = [
   {
