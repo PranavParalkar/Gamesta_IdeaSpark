@@ -11,13 +11,20 @@ export async function GET(req: NextRequest) {
     const userId = Number(session.user.id);
     let user: any = null;
     try {
-      const rows = (await query('SELECT id, name, email FROM users WHERE id = ?', [userId])) as any[];
+      const rows = (await query('SELECT id, name, email, role FROM users WHERE id = ?', [userId])) as any[];
       if (rows && rows.length > 0) user = rows[0];
-    } catch {}
+    } catch (e: any) {
+      if (String((e as any)?.code || '').toUpperCase() === 'ER_BAD_FIELD_ERROR') {
+        try {
+          const rows = (await query('SELECT id, name, email FROM users WHERE id = ?', [userId])) as any[];
+          if (rows && rows.length > 0) user = rows[0];
+        } catch {}
+      }
+    }
     // Fallback to session payload if DB lookup failed
     if (!user) user = { id: userId, name: (session.user as any)?.name || null, email: (session.user as any)?.email || null };
 
-    const adminInfo = computeAdminInfo(user?.email || null);
+    const adminInfo = computeAdminInfo(user?.email || null, user?.role || null);
     const responseUser = { ...user, isAdmin: adminInfo.isAdmin, role: adminInfo.role };
     return NextResponse.json({ user: responseUser }, { status: 200 });
   } catch (err: any) {

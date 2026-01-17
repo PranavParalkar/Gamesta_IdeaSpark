@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PrismaticBurst from '../../components/ui/PrismaticBurst';
 import toast from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -28,31 +29,12 @@ export default function LoginPage() {
     }
   };
 
-  const openCenteredPopup = (url: string) => {
-    const width = 520;
-    const height = 650;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2.5;
-    return window.open(
-      url,
-      'gamesta-google-oauth',
-      `popup=yes,width=${width},height=${height},left=${left},top=${top}`
-    );
-  };
-
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     if (typeof window === 'undefined') return;
-
-    // Use a popup so the main tab doesn't navigate away.
-    // Note: Google blocks iframing; popup is the supported UX.
-    const callbackUrl = `${window.location.origin}/login?oauth=popup`;
-    const authUrl = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
-
-    const popup = openCenteredPopup(authUrl);
-    if (!popup) {
-      // Popup blocked: fall back to full-page redirect.
-      window.location.href = authUrl;
-    }
+    // Directly start Google OAuth in the same tab.
+    // After callback, we land back on /login?oauth=1 and exchange the NextAuth session for our app token.
+    const callbackUrl = `${window.location.origin}/login?oauth=1`;
+    await signIn('google', { callbackUrl });
   };
 
   // Preserved OAuth logic
@@ -79,19 +61,7 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  // Listen for the popup to complete OAuth, then exchange the session for our app token.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (!event.data || (event.data as any).type !== 'gamesta_oauth_complete') return;
-      exchangeOAuthTokenAndRedirect();
-    };
-
-    window.addEventListener('message', onMessage);
-    return () => window.removeEventListener('message', onMessage);
-  }, []);
+  // Popup flow listener removed (we now sign-in in the same tab).
 
   // Preserved Auto-lookup name/email when PRN is entered
   useEffect(() => {

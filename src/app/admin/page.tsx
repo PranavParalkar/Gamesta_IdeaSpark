@@ -81,6 +81,7 @@ export default function AdminPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [token, setToken] = useState<string | null>(null);
+  const [tokenReady, setTokenReady] = useState(false);
 
   // Data
   const [users, setUsers] = useState<User[]>([]);
@@ -97,6 +98,7 @@ export default function AdminPage() {
     } catch {
       setToken(null);
     }
+    setTokenReady(true);
   }, []);
 
   const handleBack = () => {
@@ -158,6 +160,7 @@ export default function AdminPage() {
   useEffect(() => {
     let mounted = true;
     (async () => {
+      if (!tokenReady) return;
       if (!token) {
         window.location.href = "/login";
         return;
@@ -192,7 +195,7 @@ export default function AdminPage() {
       mounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, tokenReady]);
 
   const handleRefresh = async () => {
     const t = toast.loading("Refreshing data...");

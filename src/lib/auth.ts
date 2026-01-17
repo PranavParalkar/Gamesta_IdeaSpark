@@ -24,10 +24,20 @@ export async function getSessionFromHeader(req: any) {
     if (!payload || !payload.sub) return null;
     // Optionally fetch user from DB — if DB unavailable, return the payload so guest tokens still work
     try {
-      const rows = await query('SELECT id, name, email FROM users WHERE id = ?', [payload.sub]);
+      const rows = await query('SELECT id, name, email, role FROM users WHERE id = ?', [payload.sub]);
       if ((rows as any[]).length === 0) return { user: { id: payload.sub, email: payload.email || null }, token };
       return { user: (rows as any[])[0], token };
-    } catch (e) {
+    } catch (e: any) {
+      // Backwards-compat if the DB schema doesn't have a role column yet.
+      if (String((e as any)?.code || '').toUpperCase() === 'ER_BAD_FIELD_ERROR') {
+        try {
+          const rows = await query('SELECT id, name, email FROM users WHERE id = ?', [payload.sub]);
+          if ((rows as any[]).length === 0) return { user: { id: payload.sub, email: payload.email || null }, token };
+          return { user: (rows as any[])[0], token };
+        } catch {
+          return { user: { id: payload.sub, email: payload.email || null }, token };
+        }
+      }
       return { user: { id: payload.sub, email: payload.email || null }, token };
     }
   } catch (e) {
