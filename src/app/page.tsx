@@ -13,7 +13,6 @@ import GlowLines from "../components/ui/GlowLines";
 import ParticleField from "../components/ui/ParticleField";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
 import Sparkline from "../components/ui/Sparkline";
-import ChatBot from "../components/ChatBot";
 import InfiniteMenu from '../components/InfiniteMenu'
 
 import { useEffect, useState } from "react";
